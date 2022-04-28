@@ -6,12 +6,13 @@ import FilmDetailsPopupView from '../view/film-details-popup-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import {render} from '../render';
 
+const FILMS_CARDS_COUNT = 5;
+const FILMS_EXTRA_CARDS_COUNT = 2;
+
 export default class FilmsPresenter {
   init = (filmsContainer) => {
     this.filmsContainer = filmsContainer;
 
-    const FILMS_CARDS_COUNT = 5;
-    const FILMS_EXTRA_CARDS_COUNT = 2;
     render(new MainNavigationView(), this.filmsContainer);
     render(new SortView(), this.filmsContainer);
     render(new FilmsContainerView(), this.filmsContainer);
