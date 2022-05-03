@@ -35,6 +35,6 @@ export default class FilmsPresenter {
       }
     });
 
-    render(new FilmDetailsPopupView(), siteBodyElement);
+    // render(new FilmDetailsPopupView(), siteBodyElement);
   };
 }
