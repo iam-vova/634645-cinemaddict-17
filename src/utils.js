@@ -22,8 +22,15 @@ const generateRandomDate = (date) => {
   return new Date(minDate + Math.random() * (maxDate - minDate));
 };
 
+const getTimeFromMins = (mins) => {
+  const hours = Math.trunc(mins / 60);
+  const minutes = mins % 60;
+  return hours === 0 ? `${minutes} m` : `${hours}h ${minutes}m`;
+};
+
 export {
   getRandomInteger,
   getRandomArrItems,
-  generateRandomDate
+  generateRandomDate,
+  getTimeFromMins
 };

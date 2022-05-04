@@ -6,87 +6,88 @@ const FILM_RATE_MIN = 0.1;
 const FILM_RATE_MAX = 10;
 const FILM_AGE_RATE_MIN = 0;
 const FILM_AGE_RATE_MAX = 21;
+const COMMENTS_COUNT = 40;
 
 const posterNames = [
-  `made-for-each-other.png`,
-  `popeye-meets-sinbad.png`,
-  `sagebrush-trail.jpg`,
-  `santa-claus-conquers-the-martians.jpg`,
-  `the-dance-of-life.jpg`,
-  `the-great-flamarion.jpg`,
-  `the-man-with-the-golden-arm.jpg`
+  'made-for-each-other.png',
+  'popeye-meets-sinbad.png',
+  'sagebrush-trail.jpg',
+  'santa-claus-conquers-the-martians.jpg',
+  'the-dance-of-life.jpg',
+  'the-great-flamarion.jpg',
+  'the-man-with-the-golden-arm.jpg'
 ];
 const filmNames = [
-  `The Shawshank Redemption`,
-  `The Green Mile`,
-  `Forrest Gump`,
-  `Schindler's List`,
-  `Intouchables`,
-  `Inception`,
-  `Léon`,
-  `The Lion King`,
-  `Fight Club`,
-  `Иван Васильевич меняет профессию`,
-  `La vita è bella`,
-  `Knockin' on Heaven's Door`,
-  `The Godfather`,
-  `Pulp Fiction`,
-  `Операция «Ы» и другие приключения Шурика`
+  'The Shawshank Redemption',
+  'The Green Mile',
+  'Forrest Gump',
+  'Schindlers List',
+  'Intouchables',
+  'Inception',
+  'Léon',
+  'The Lion King',
+  'Fight Club',
+  'Иван Васильевич меняет профессию',
+  'La vita è bella',
+  'Knockin on Heavens Door',
+  'The Godfather',
+  'Pulp Fiction',
+  'Операция «Ы» и другие приключения Шурика'
 ];
 const filmDirectors = [
-  `Frank Darabont`,
-  `Robert Zemeckis`,
-  `Steven Spielberg`,
-  `Olivier Nakache`,
-  `Christopher Nolan`,
-  `Roger Allers`
+  'Frank Darabont',
+  'Robert Zemeckis',
+  'Steven Spielberg',
+  'Olivier Nakache',
+  'Christopher Nolan',
+  'Roger Allers'
 ];
 const filmsGenres = [
-  `Musical`,
-  `Western`,
-  `Drama`,
-  `Comedy`,
-  `Cartoon`,
-  `Mystery`
+  'Musical',
+  'Western',
+  'Drama',
+  'Comedy',
+  'Cartoon',
+  'Mystery'
 ];
 const filmWriters = [
-  `Philippe Pozzo di Borgo`,
-  `Éric Toledano`,
-  `Christopher Nolan`,
-  `Irene Mecchi`,
-  `Jonathan Roberts`,
-  `Linda Woolverton`,
-  `Burny Mattinson`
+  'Philippe Pozzo di Borgo',
+  'Éric Toledano',
+  'Christopher Nolan',
+  'Irene Mecchi',
+  'Jonathan Roberts',
+  'Linda Woolverton',
+  'Burny Mattinson'
 ];
 const actors = [
-  `Leonardo DiCaprio`,
-  `Joseph Gordon-Levitt`,
-  `Ellen Page`,
-  `Tom Hardy`,
-  `Ken Watanabe`,
-  `Dileep Rao`,
-  `Cillian Murphy`,
-  `Tom Berenger`,
-  `Marion Cotillard`,
-  `Pete Postlethwaite`
+  'Leonardo DiCaprio',
+  'Joseph Gordon-Levitt',
+  'Ellen Page',
+  'Tom Hardy',
+  'Ken Watanabe',
+  'Dileep Rao',
+  'Cillian Murphy',
+  'Tom Berenger',
+  'Marion Cotillard',
+  'Pete Postlethwaite'
 ];
 const countries = [
-  `USA`,
-  `France`,
-  `Italy`,
-  `Germany`,
-  `Russia`,
-  `USSR`,
-  `Poland`,
-  `Canada`,
-  `Japan`,
-  `China`
+  'USA',
+  'France',
+  'Italy',
+  'Germany',
+  'Russia',
+  'USSR',
+  'Poland',
+  'Canada',
+  'Japan',
+  'China'
 ];
-const filmDescritptionGeneral = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
+const filmDescritptionGeneral = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
 
-export const generateFilm = (filmId, commentsCount) => {
+export const generateFilm = (filmId) => {
   const filmTitle = getRandomArrItems(filmNames);
-  const commentsIds = Array.from({length: commentsCount}, (v, i) => i);
+  const commentsIds = Array.from({length: COMMENTS_COUNT}, (value, index) => index);
 
   return {
     id: filmId,
@@ -98,23 +99,23 @@ export const generateFilm = (filmId, commentsCount) => {
       poster: `images/posters/${getRandomArrItems(posterNames)}`,
       ageRating: `${getRandomInteger(FILM_AGE_RATE_MIN, FILM_AGE_RATE_MAX)}+`,
       director: getRandomArrItems(filmDirectors),
-      writers: getRandomArrItems(filmWriters, getRandomInteger(0, filmWriters.length - 1)),
-      actors: getRandomArrItems(actors, getRandomInteger(0, filmWriters.length - 1)),
+      writers: getRandomArrItems(filmWriters, getRandomInteger(1, filmWriters.length - 1)),
+      actors: getRandomArrItems(actors, getRandomInteger(1, filmWriters.length - 1)),
       release: {
         date: generateRandomDate(),
         releaseCountry:  getRandomArrItems(countries)
       },
       runtime: getRandomInteger(RUN_TIME_MIN, RUN_TIME_MAX),
-      genre: getRandomArrItems(filmsGenres, getRandomInteger(0, filmsGenres.length - 1)),
-      description: filmDescritptionGeneral.slice(0, getRandomInteger(0, filmDescritptionGeneral.length - 1))
+      genre: getRandomArrItems(filmsGenres, 3),
+      description: filmDescritptionGeneral.slice(0, getRandomInteger(50, filmDescritptionGeneral.length - 1))
     },
     userDetails: {
       watchlist: Math.random() >= 0.5,
-      alreadyWatched: Math.random() >= 0.5,
+      isWatched: Math.random() >= 0.5,
       watchingDate:  generateRandomDate(),
-      favorite: Math.random() >= 0.5
+      isFavorite: Math.random() >= 0.5
     }
-  }
+  };
 };
 
 
