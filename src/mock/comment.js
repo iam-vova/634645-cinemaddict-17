@@ -17,12 +17,10 @@ const userNames = [
   'Scarlett Summers'
 ];
 
-export const generateComment = (commentId) => {
-  return {
-    id: commentId,
-    author: getRandomArrItems(userNames),
-    comment: commentGeneral.slice(0, getRandomInteger(0, commentGeneral.length - 1)),
-    date: generateRandomDate(),
-    emotion: getRandomArrItems(emojiNames)
-  };
-};
+export const generateComment = (commentId) => ({
+  id: commentId,
+  author: getRandomArrItems(userNames),
+  comment: commentGeneral.slice(0, getRandomInteger(0, commentGeneral.length - 1)),
+  date: generateRandomDate(),
+  emotion: getRandomArrItems(emojiNames)
+});
