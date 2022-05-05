@@ -1,4 +1,5 @@
 import {getRandomInteger, getRandomArrItems, generateRandomDate} from '../utils';
+import {commentsCount} from '../constants';
 
 const RUN_TIME_MIN = 50;
 const RUN_TIME_MAX = 220;
@@ -6,7 +7,7 @@ const FILM_RATE_MIN = 0.1;
 const FILM_RATE_MAX = 10;
 const FILM_AGE_RATE_MIN = 0;
 const FILM_AGE_RATE_MAX = 21;
-const COMMENTS_COUNT = 40;
+const FILMS_COUNT = 5;
 
 const posterNames = [
   'made-for-each-other.png',
@@ -85,9 +86,9 @@ const countries = [
 ];
 const filmDescritptionGeneral = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
 
-export const generateFilm = (filmId) => {
+const generateFilm = (filmId) => {
   const filmTitle = getRandomArrItems(filmNames);
-  const commentsIds = Array.from({length: COMMENTS_COUNT}, (value, index) => index);
+  const commentsIds = Array.from({length: commentsCount}, (value, index) => index);
 
   return {
     id: filmId,
@@ -106,7 +107,7 @@ export const generateFilm = (filmId) => {
         releaseCountry:  getRandomArrItems(countries)
       },
       runtime: getRandomInteger(RUN_TIME_MIN, RUN_TIME_MAX),
-      genre: getRandomArrItems(filmsGenres, 3),
+      genre: getRandomArrItems(filmsGenres, getRandomInteger(1, filmsGenres.length - 1)),
       description: filmDescritptionGeneral.slice(0, getRandomInteger(50, filmDescritptionGeneral.length - 1))
     },
     userDetails: {
@@ -118,4 +119,6 @@ export const generateFilm = (filmId) => {
   };
 };
 
+export const generateFilms = () =>
+  Array.from({length: FILMS_COUNT}, (value, index) => generateFilm(index));
 

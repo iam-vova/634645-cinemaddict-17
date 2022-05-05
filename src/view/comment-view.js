@@ -1,9 +1,8 @@
-import {createElement} from '../render.js';
-import dayjs from 'dayjs';
+import {createElement} from '../render';
+import {humanizeCommentDate} from '../utils';
 
 const createCommentTemplate = (item) => {
-  const {author, comment, date, emotion} = item;
-  const humanizeCommentDate = (commentDate) => dayjs(commentDate).format('YYYY/MM/DD HH:mm');
+  const {author, comment, date, emotion} = item || {};
 
   return (
     `<li class="film-details__comment">

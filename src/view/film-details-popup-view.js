@@ -1,5 +1,6 @@
 import {createElement} from '../render.js';
-import dayjs from 'dayjs';
+import {getTimeFromMins, humanizeFilmDate} from '../utils';
+import {emojiNames} from '../constants';
 
 const createFilmDetailsPopupTemplate = (film) => {
   const commentsCount = film.comments.length;
@@ -18,9 +19,8 @@ const createFilmDetailsPopupTemplate = (film) => {
     description
   } = film.filmInfo;
   const {watchlist, isWatched, isFavorite} = film.userDetails;
-  const humanizeFilmDate = (date) => dayjs(date).format('DD MMMM YYYY');
-  const controlBtnClassName = (btnName) => btnName ? 'film-details__control-button--active' : '';
-  const dataJoin = (data) => data.isArray ? data.join(', ') : data;
+
+  const getControlBtnClassName = (isActive) => isActive ? 'film-details__control-button--active' : '';
 
   return (
     `<section class="film-details">
@@ -55,11 +55,11 @@ const createFilmDetailsPopupTemplate = (film) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Writers</td>
-                  <td class="film-details__cell">${dataJoin(writers)}</td>
+                  <td class="film-details__cell">${writers.join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Actors</td>
-                  <td class="film-details__cell">${dataJoin(actors)}</td>
+                  <td class="film-details__cell">${actors.join(', ')}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
@@ -67,18 +67,19 @@ const createFilmDetailsPopupTemplate = (film) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${runtime}</td>
+                  <td class="film-details__cell">${getTimeFromMins(runtime)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
                   <td class="film-details__cell">${release.releaseCountry}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Genres</td>
+                  <td class="film-details__term">${genre.length > 1 ? 'Genres' : 'Genre'}</td>
                   <td class="film-details__cell">
-                    <span class="film-details__genre">${genre[0]}</span>
-                    <span class="film-details__genre">${genre[1]}</span>
-                    <span class="film-details__genre">${genre[2]}</span></td>
+                    <span class="film-details__genre">
+                      ${genre.map((item) => (`<span class="film-details__genre">${item}</span>`)).join('')}
+                    </span>
+                  </td>
                 </tr>
               </table>
 
@@ -89,9 +90,9 @@ const createFilmDetailsPopupTemplate = (film) => {
           </div>
 
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${controlBtnClassName(watchlist)}" id="watchlist" name="watchlist">Add to watchlist</button>
-            <button type="button" class="film-details__control-button film-details__control-button--watched ${controlBtnClassName(isWatched)}" id="watched" name="watched">Already watched</button>
-            <button type="button" class="film-details__control-button film-details__control-button--favorite ${controlBtnClassName(isFavorite)}" id="favorite" name="favorite">Add to favorites</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getControlBtnClassName(watchlist)}" id="watchlist" name="watchlist">Add to watchlist</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watched ${getControlBtnClassName(isWatched)}" id="watched" name="watched">Already watched</button>
+            <button type="button" class="film-details__control-button film-details__control-button--favorite ${getControlBtnClassName(isFavorite)}" id="favorite" name="favorite">Add to favorites</button>
           </section>
         </div>
 
@@ -111,25 +112,10 @@ const createFilmDetailsPopupTemplate = (film) => {
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-                <label class="film-details__emoji-label" for="emoji-smile">
-                  <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                <label class="film-details__emoji-label" for="emoji-sleeping">
-                  <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-                <label class="film-details__emoji-label" for="emoji-puke">
-                  <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-                </label>
-
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-                <label class="film-details__emoji-label" for="emoji-angry">
-                  <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-                </label>
+                ${emojiNames.map((item) => (`<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${item}" value="smile">
+                   <label class="film-details__emoji-label" for="emoji-${item}">
+                     <img src="./images/emoji/${item}.png" width="30" height="30" alt="emoji">
+                   </label>`)).join('')}
               </div>
             </div>
           </section>

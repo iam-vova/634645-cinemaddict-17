@@ -8,9 +8,6 @@ import ShowMoreButtonView from '../view/show-more-button-view';
 import CommentView from '../view/comment-view';
 import {render} from '../render';
 
-const FILMS_EXTRA_CARDS_COUNT = 2;
-const extraContainers = ['Top rated', 'Most commented'];
-
 export default class FilmsPresenter {
   init = (filmsContainer, filmsModel, commentsModel) => {
     this.filmsContainer = filmsContainer;
@@ -18,6 +15,7 @@ export default class FilmsPresenter {
     this.commentsModel = commentsModel;
     this.films = [...this.filmsModel.getFilms()];
     this.comments = [...this.commentsModel.getComments()];
+    const popupFilm = this.films[0];
 
     render(new MainNavigationView(), this.filmsContainer);
     render(new SortView(), this.filmsContainer);
@@ -26,38 +24,39 @@ export default class FilmsPresenter {
     const filmsSectionElement = this.filmsContainer.querySelector('.films');
     const filmsListElement = filmsSectionElement.querySelector('.films-list');
     const filmsListContainerElement = filmsListElement.querySelector('.films-list__container');
-    const siteBodyElement = document.querySelector('body');
 
-    for (let i = 0; i < this.films.length; i++) {
-      render(new FilmCardView(this.films[i]), filmsListContainerElement);
+    for (const film of this.films) {
+      render(new FilmCardView(film), filmsListContainerElement);
     }
 
     render(new ShowMoreButtonView(), filmsListElement);
 
-    const filmsCopy = this.films.slice();
-    for (const container of extraContainers) {
-      const extraContainer = new FilmsExtraContainerView(container);
-      render(extraContainer, filmsSectionElement);
-      const extraFilmsContainer = extraContainer.getElement().querySelector('.films-list__container');
+    const filmsSortByRate = this.films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+    const filmsSortByComments = this.films.slice().sort((a, b) => b.comments.length - a.comments.length);
+    this.renderExtraContainer('Top rated', filmsSortByRate.slice(0, 2), filmsSectionElement);
+    this.renderExtraContainer('Most commented', filmsSortByComments.slice(0, 2), filmsSectionElement);
 
-      if (container === 'Top rated') {
-        filmsCopy.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
-      } else if (container === 'Most commented') {
-        filmsCopy.sort((a, b) => b.comments.length - a.comments.length);
-      }
+    this.renderFilmDetailsPopupView(popupFilm);
+  };
 
-      for (let i = 0; i < FILMS_EXTRA_CARDS_COUNT; i++) {
-        render(new FilmCardView(filmsCopy[i]), extraFilmsContainer);
-      }
+  renderExtraContainer(title, films, container) {
+    const extraContainer = new FilmsExtraContainerView(title);
+    render(extraContainer, container);
+    const extraFilmsContainer = extraContainer.getElement().querySelector('.films-list__container');
+    for (const film of films) {
+      render(new FilmCardView(film), extraFilmsContainer);
     }
+  }
 
-    const filmDetailsPopup = new FilmDetailsPopupView(this.films[0]);
+  renderFilmDetailsPopupView(popupFilm) {
+    const siteBodyElement = document.querySelector('body');
+    const filmDetailsPopup = new FilmDetailsPopupView(popupFilm);
     siteBodyElement.classList.add('hide-overflow');
     render(filmDetailsPopup, siteBodyElement);
     const commentsContainer = filmDetailsPopup.getElement().querySelector('.film-details__comments-list');
 
-    for (let i = 0; i < this.films[0].comments.length; i++) {
-      render(new CommentView(this.comments[this.films[0].comments[i]]), commentsContainer);
+    for (const comment of popupFilm.comments) {
+      render(new CommentView(this.comments[comment]), commentsContainer);
     }
-  };
+  }
 }
