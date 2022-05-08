@@ -1,7 +1,11 @@
 export default class CommentsModel {
+  #comments = null;
+
   constructor(comments) {
-    this.comments = comments;
+    this.#comments = comments;
   }
 
-  getComments = () => this.comments;
+  get comments() {
+    return this.#comments;
+  }
 }
