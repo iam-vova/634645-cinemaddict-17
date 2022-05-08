@@ -57,14 +57,15 @@ export default class FilmsPresenter {
   #renderFilm(film, container) {
     const filmComponent = new FilmCardView(film);
 
-    filmComponent.element.addEventListener('click', () => {
-      if (this.#filmDetailsPopup) {
-        this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
-      }
+    filmComponent.element.querySelector('.film-card__link')
+      .addEventListener('click', () => {
+        if (this.#filmDetailsPopup) {
+          this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
+        }
 
-      this.#renderFilmDetailsPopupView(film);
-      document.addEventListener('keydown', this.#onEscKeyDown);
-    });
+        this.#renderFilmDetailsPopupView(film);
+        document.addEventListener('keydown', this.#onEscKeyDown);
+      });
 
     render(filmComponent, container);
   }
@@ -84,7 +85,6 @@ export default class FilmsPresenter {
   }
 
   #renderFilmDetailsPopupView(film) {
-
     this.#filmDetailsPopup = new FilmDetailsPopupView(film);
     this.#siteBodyElement.classList.add('hide-overflow');
     render(this.#filmDetailsPopup, this.#siteBodyElement);
