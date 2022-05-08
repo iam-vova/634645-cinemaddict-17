@@ -15,6 +15,8 @@ export default class FilmsPresenter {
   #films = [];
   #comments = [];
   #filmsComponent = new FilmsContainerView();
+  #filmDetailsPopup = null;
+  #siteBodyElement = document.querySelector('body');
 
   init = (filmsContainer, filmsModel, commentsModel) => {
     this.#filmsContainer = filmsContainer;
@@ -22,7 +24,6 @@ export default class FilmsPresenter {
     this.#commentsModel = commentsModel;
     this.#films = [...this.#filmsModel.films];
     this.#comments = [...this.#commentsModel.comments];
-    const popupFilm = this.#films[0];
 
     render(new MainNavigationView(), this.#filmsContainer);
     render(new SortView(), this.#filmsContainer);
@@ -33,7 +34,7 @@ export default class FilmsPresenter {
     const filmsListContainerElement = filmsListElement.querySelector('.films-list__container');
 
     for (const film of this.#films) {
-      render(new FilmCardView(film), filmsListContainerElement);
+      this.#renderFilm(film, filmsListContainerElement);
     }
 
     render(new ShowMoreButtonView(), filmsListElement);
@@ -42,27 +43,61 @@ export default class FilmsPresenter {
     const filmsSortByComments = this.#films.slice().sort((a, b) => b.comments.length - a.comments.length);
     this.#renderExtraContainer('Top rated', filmsSortByRate.slice(0, 2), filmsSectionElement);
     this.#renderExtraContainer('Most commented', filmsSortByComments.slice(0, 2), filmsSectionElement);
-
-    this.#renderFilmDetailsPopupView(popupFilm);
   };
+
+  #onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
+      this.#siteBodyElement.classList.remove('hide-overflow');
+      document.removeEventListener('keydown', this.#onEscKeyDown);
+    }
+  };
+
+  #renderFilm(film, container) {
+    const filmComponent = new FilmCardView(film);
+
+    filmComponent.element.addEventListener('click', () => {
+      if (this.#filmDetailsPopup) {
+        this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
+      }
+
+      this.#renderFilmDetailsPopupView(film);
+      document.addEventListener('keydown', this.#onEscKeyDown);
+    });
+
+    render(filmComponent, container);
+  }
 
   #renderExtraContainer(title, films, container) {
     const extraContainer = new FilmsExtraContainerView(title);
     render(extraContainer, container);
     const extraFilmsContainer = extraContainer.element.querySelector('.films-list__container');
     for (const film of films) {
-      render(new FilmCardView(film), extraFilmsContainer);
+      this.#renderFilm(film, extraFilmsContainer);
     }
   }
 
-  #renderFilmDetailsPopupView(popupFilm) {
-    const siteBodyElement = document.querySelector('body');
-    const filmDetailsPopup = new FilmDetailsPopupView(popupFilm);
-    siteBodyElement.classList.add('hide-overflow');
-    render(filmDetailsPopup, siteBodyElement);
-    const commentsContainer = filmDetailsPopup.element.querySelector('.film-details__comments-list');
+  #removeFilmDetailsPopupView(film) {
+    film.element.remove();
+    film.removeElement();
+  }
 
-    for (const comment of popupFilm.comments) {
+  #renderFilmDetailsPopupView(film) {
+
+    this.#filmDetailsPopup = new FilmDetailsPopupView(film);
+    this.#siteBodyElement.classList.add('hide-overflow');
+    render(this.#filmDetailsPopup, this.#siteBodyElement);
+    const commentsContainer = this.#filmDetailsPopup.element.querySelector('.film-details__comments-list');
+
+    this.#filmDetailsPopup.element.querySelector('.film-details__close-btn')
+      .addEventListener('click', () => {
+        this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
+        this.#siteBodyElement.classList.remove('hide-overflow');
+        document.removeEventListener('keydown', this.#onEscKeyDown);
+      });
+
+    for (const comment of film.comments) {
       render(new CommentView(this.#comments[comment]), commentsContainer);
     }
   }
