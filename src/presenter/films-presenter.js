@@ -48,23 +48,26 @@ export default class FilmsPresenter {
   #onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
+      this.#removeFilmDetailsPopupView();
+    }
+  };
+
+  #removeFilmDetailsPopupView() {
+    if (this.#filmDetailsPopup) {
+      this.#filmDetailsPopup.element.remove();
+      this.#filmDetailsPopup.removeElement();
       this.#siteBodyElement.classList.remove('hide-overflow');
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
-  };
+  }
 
   #renderFilm(film, container) {
     const filmComponent = new FilmCardView(film);
 
     filmComponent.element.querySelector('.film-card__link')
       .addEventListener('click', () => {
-        if (this.#filmDetailsPopup) {
-          this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
-        }
-
+        this.#removeFilmDetailsPopupView();
         this.#renderFilmDetailsPopupView(film);
-        document.addEventListener('keydown', this.#onEscKeyDown);
       });
 
     render(filmComponent, container);
@@ -79,22 +82,17 @@ export default class FilmsPresenter {
     }
   }
 
-  #removeFilmDetailsPopupView(film) {
-    film.element.remove();
-    film.removeElement();
-  }
-
   #renderFilmDetailsPopupView(film) {
     this.#filmDetailsPopup = new FilmDetailsPopupView(film);
     this.#siteBodyElement.classList.add('hide-overflow');
     render(this.#filmDetailsPopup, this.#siteBodyElement);
     const commentsContainer = this.#filmDetailsPopup.element.querySelector('.film-details__comments-list');
 
+    document.addEventListener('keydown', this.#onEscKeyDown);
+
     this.#filmDetailsPopup.element.querySelector('.film-details__close-btn')
       .addEventListener('click', () => {
-        this.#removeFilmDetailsPopupView(this.#filmDetailsPopup);
-        this.#siteBodyElement.classList.remove('hide-overflow');
-        document.removeEventListener('keydown', this.#onEscKeyDown);
+        this.#removeFilmDetailsPopupView();
       });
 
     for (const comment of film.comments) {
