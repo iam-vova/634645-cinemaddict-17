@@ -6,49 +6,39 @@ import FilmsExtraContainerView from '../view/films-extra-container-view';
 import FilmDetailsPopupView from '../view/film-details-popup-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import CommentView from '../view/comment-view';
+import EmptyFilmsListView from '../view/empty-films-list-view';
+import {filmsContainerTitles} from '../constants';
 import {render} from '../render';
 
 const FILMS_COUNT_PER_STEP = 5;
 
 export default class FilmsPresenter {
-  #filmsContainer = null;
+  #mainContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #films = [];
   #comments = [];
-  #filmsComponent = new FilmsContainerView();
   #filmDetailsPopup = null;
   #siteBodyElement = document.querySelector('body');
-  #filmsSectionElement = this.#filmsComponent.element;
+
+  #filmsContainer = new FilmsContainerView();
+  #filmsSectionElement = this.#filmsContainer.element;
   #filmsListElement = this.#filmsSectionElement.querySelector('.films-list');
   #filmsListContainerElement = this.#filmsListElement.querySelector('.films-list__container');
+
   #showMoreButtonComponent = new ShowMoreButtonView();
   #renderedFilmsCount = FILMS_COUNT_PER_STEP;
 
-  init = (filmsContainer, filmsModel, commentsModel) => {
-    this.#filmsContainer = filmsContainer;
+  constructor(mainContainer, filmsModel, commentsModel) {
+    this.#mainContainer = mainContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
+  }
+
+  init = () => {
     this.#films = [...this.#filmsModel.films];
     this.#comments = [...this.#commentsModel.comments];
-
-    render(new MainNavigationView(), this.#filmsContainer);
-    render(new SortView(), this.#filmsContainer);
-    render(this.#filmsComponent, this.#filmsContainer);
-
-    for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
-      this.#renderFilm(this.#films[i]);
-    }
-
-    if (this.#films.length > FILMS_COUNT_PER_STEP) {
-      render(this.#showMoreButtonComponent, this.#filmsListElement);
-      this.#showMoreButtonComponent.element.addEventListener('click', this.#onShowMoreButtonClick);
-    }
-
-    const filmsSortByRate = this.#films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
-    const filmsSortByComments = this.#films.slice().sort((a, b) => b.comments.length - a.comments.length);
-    this.#renderExtraContainer('Top rated', filmsSortByRate.slice(0, 2), this.#filmsSectionElement);
-    this.#renderExtraContainer('Most commented', filmsSortByComments.slice(0, 2), this.#filmsSectionElement);
+    this.#renderPage();
   };
 
   #onEscKeyDown = (evt) => {
@@ -117,6 +107,31 @@ export default class FilmsPresenter {
 
     for (const comment of film.comments) {
       render(new CommentView(this.#comments[comment]), commentsContainer);
+    }
+  }
+
+  #renderPage() {
+    render(new MainNavigationView(), this.#mainContainer);
+
+    if (this.#films.length === 0) {
+      render(new EmptyFilmsListView(filmsContainerTitles.noMovies), this.#mainContainer);
+    } else {
+      render(new SortView(), this.#mainContainer);
+      render(this.#filmsContainer, this.#mainContainer);
+
+      for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
+        this.#renderFilm(this.#films[i]);
+      }
+
+      if (this.#films.length > FILMS_COUNT_PER_STEP) {
+        render(this.#showMoreButtonComponent, this.#filmsListElement);
+        this.#showMoreButtonComponent.element.addEventListener('click', this.#onShowMoreButtonClick);
+      }
+
+      const filmsSortByRate = this.#films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+      const filmsSortByComments = this.#films.slice().sort((a, b) => b.comments.length - a.comments.length);
+      this.#renderExtraContainer(filmsContainerTitles.topRated, filmsSortByRate.slice(0, 2), this.#filmsSectionElement);
+      this.#renderExtraContainer(filmsContainerTitles.mostCommented, filmsSortByComments.slice(0, 2), this.#filmsSectionElement);
     }
   }
 }
