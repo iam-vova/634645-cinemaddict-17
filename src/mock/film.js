@@ -7,7 +7,7 @@ const FILM_RATE_MIN = 0.1;
 const FILM_RATE_MAX = 10;
 const FILM_AGE_RATE_MIN = 0;
 const FILM_AGE_RATE_MAX = 21;
-const FILMS_COUNT = 5;
+const FILMS_COUNT = 14;
 
 const posterNames = [
   'made-for-each-other.png',
