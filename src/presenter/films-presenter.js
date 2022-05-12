@@ -48,8 +48,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #onShowMoreButtonClick = (evt) => {
-    evt.preventDefault();
+  #onShowMoreButtonClick = () => {
     this.#films
       .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILMS_COUNT_PER_STEP)
       .forEach((film) => this.#renderFilm(film));
@@ -62,7 +61,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #removeFilmDetailsPopupView() {
+  #removeFilmDetailsPopupView = () => {
     if (this.#filmDetailsPopup) {
       this.#filmDetailsPopup.element.remove();
       this.#filmDetailsPopup.removeElement();
@@ -74,11 +73,10 @@ export default class FilmsPresenter {
   #renderFilm(film, container = this.#filmsListContainerElement) {
     const filmComponent = new FilmCardView(film);
 
-    filmComponent.element.querySelector('.film-card__link')
-      .addEventListener('click', () => {
-        this.#removeFilmDetailsPopupView();
-        this.#renderFilmDetailsPopupView(film);
-      });
+    filmComponent.setClickHandler(() => {
+      this.#removeFilmDetailsPopupView();
+      this.#renderFilmDetailsPopupView(film);
+    });
 
     render(filmComponent, container);
   }
@@ -99,11 +97,7 @@ export default class FilmsPresenter {
     const commentsContainer = this.#filmDetailsPopup.element.querySelector('.film-details__comments-list');
 
     document.addEventListener('keydown', this.#onEscKeyDown);
-
-    this.#filmDetailsPopup.element.querySelector('.film-details__close-btn')
-      .addEventListener('click', () => {
-        this.#removeFilmDetailsPopupView();
-      });
+    this.#filmDetailsPopup.setCloseClickHandler(this.#removeFilmDetailsPopupView);
 
     for (const comment of film.comments) {
       render(new CommentView(this.#comments[comment]), commentsContainer);
@@ -125,7 +119,7 @@ export default class FilmsPresenter {
 
       if (this.#films.length > FILMS_COUNT_PER_STEP) {
         render(this.#showMoreButtonComponent, this.#filmsListElement);
-        this.#showMoreButtonComponent.element.addEventListener('click', this.#onShowMoreButtonClick);
+        this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClick);
       }
 
       const filmsSortByRate = this.#films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
