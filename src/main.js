@@ -13,9 +13,9 @@ const films = generateFilms();
 const filmsModel = new FilmsModel(films);
 const comments = generateComments();
 const commentsModel = new CommentsModel(comments);
-const filmsPresenter = new FilmsPresenter();
+const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, commentsModel);
 
 render(new UserRankView(), siteHeaderElement);
 
-filmsPresenter.init(siteMainElement, filmsModel, commentsModel);
+filmsPresenter.init();
 
