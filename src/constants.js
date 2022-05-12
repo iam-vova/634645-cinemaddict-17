@@ -8,12 +8,12 @@ const emojiNames = [
 const commentsCount = 40;
 
 const filmsContainerTitles = {
-  topRated: 'Top rated',
-  mostCommented: 'Most commented',
-  noMovies: 'There are no movies in our database',
-  noWatchlist: 'There are no movies to watch now',
-  noHistory: 'There are no watched movies now',
-  noFavorites: 'There are no favorite movies now',
+  TopRated: 'Top rated',
+  MostCommented: 'Most commented',
+  NoMovies: 'There are no movies in our database',
+  NoWatchlist: 'There are no movies to watch now',
+  NoHistory: 'There are no watched movies now',
+  NoFavorites: 'There are no favorite movies now',
 };
 
 export {

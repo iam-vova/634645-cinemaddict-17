@@ -114,7 +114,7 @@ export default class FilmsPresenter {
     render(new MainNavigationView(), this.#mainContainer);
 
     if (this.#films.length === 0) {
-      render(new EmptyFilmsListView(filmsContainerTitles.noMovies), this.#mainContainer);
+      render(new EmptyFilmsListView(filmsContainerTitles.NoMovies), this.#mainContainer);
     } else {
       render(new SortView(), this.#mainContainer);
       render(this.#filmsContainer, this.#mainContainer);
@@ -130,8 +130,8 @@ export default class FilmsPresenter {
 
       const filmsSortByRate = this.#films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       const filmsSortByComments = this.#films.slice().sort((a, b) => b.comments.length - a.comments.length);
-      this.#renderExtraContainer(filmsContainerTitles.topRated, filmsSortByRate.slice(0, 2), this.#filmsSectionElement);
-      this.#renderExtraContainer(filmsContainerTitles.mostCommented, filmsSortByComments.slice(0, 2), this.#filmsSectionElement);
+      this.#renderExtraContainer(filmsContainerTitles.TopRated, filmsSortByRate.slice(0, 2), this.#filmsSectionElement);
+      this.#renderExtraContainer(filmsContainerTitles.MostCommented, filmsSortByComments.slice(0, 2), this.#filmsSectionElement);
     }
   }
 }
