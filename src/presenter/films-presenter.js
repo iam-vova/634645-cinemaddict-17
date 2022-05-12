@@ -68,7 +68,7 @@ export default class FilmsPresenter {
       this.#siteBodyElement.classList.remove('hide-overflow');
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
-  }
+  };
 
   #renderFilm(film, container = this.#filmsListContainerElement) {
     const filmComponent = new FilmCardView(film);

@@ -145,5 +145,5 @@ export default class FilmDetailsPopupView extends AbstractView {
   #closeClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.click();
-  }
+  };
 }
