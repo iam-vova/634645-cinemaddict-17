@@ -8,7 +8,7 @@ import ShowMoreButtonView from '../view/show-more-button-view';
 import CommentView from '../view/comment-view';
 import EmptyFilmsListView from '../view/empty-films-list-view';
 import {filmsContainerTitles} from '../constants';
-import {render} from '../render';
+import {render} from '../framework/render';
 
 const FILMS_COUNT_PER_STEP = 5;
 
