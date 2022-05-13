@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view';
 import {getTimeFromMins, humanizeFilmDate} from '../utils';
 import {emojiNames} from '../constants';
 
@@ -125,11 +125,11 @@ const createFilmDetailsPopupTemplate = (film) => {
   );
 };
 
-export default class FilmDetailsPopupView {
-  #element = null;
+export default class FilmDetailsPopupView extends AbstractView {
   #film = null;
 
   constructor(film) {
+    super();
     this.#film = film;
   }
 
@@ -137,15 +137,13 @@ export default class FilmDetailsPopupView {
     return createFilmDetailsPopupTemplate(this.#film);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setCloseClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

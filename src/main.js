@@ -2,9 +2,9 @@ import UserRankView from './view/user-rank-view';
 import FilmsPresenter from './presenter/films-presenter';
 import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';
+import {render} from './framework/render';
 import {generateFilms} from './mock/film';
 import {generateComments} from './mock/comment';
-import {render} from './render';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
