@@ -1,13 +1,12 @@
 import FilmsContainerView from '../view/films-container-view';
+import FilmsListContainerView from '../view/films-list-container-view';
 import MainNavigationView from '../view/main-navigation-view';
 import SortView from '../view/sort-view';
 import FilmCardView from '../view/film-card-view';
-import FilmsExtraContainerView from '../view/films-extra-container-view';
 import FilmDetailsPopupView from '../view/film-details-popup-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import CommentView from '../view/comment-view';
-import EmptyFilmsListView from '../view/empty-films-list-view';
-import {filmsContainerTitles} from '../constants';
+import {FilmsContainerTitles} from '../constants';
 import {render} from '../framework/render';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -20,12 +19,8 @@ export default class FilmsPresenter {
   #comments = [];
   #filmDetailsPopup = null;
   #siteBodyElement = document.querySelector('body');
-
   #filmsContainer = new FilmsContainerView();
-  #filmsSectionElement = this.#filmsContainer.element;
-  #filmsListElement = this.#filmsSectionElement.querySelector('.films-list');
-  #filmsListContainerElement = this.#filmsListElement.querySelector('.films-list__container');
-
+  #filmsListContainer = null;
   #showMoreButtonComponent = new ShowMoreButtonView();
   #renderedFilmsCount = FILMS_COUNT_PER_STEP;
 
@@ -70,7 +65,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #renderFilm(film, container = this.#filmsListContainerElement) {
+  #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer()) {
     const filmComponent = new FilmCardView(film);
 
     filmComponent.setClickHandler(() => {
@@ -82,11 +77,10 @@ export default class FilmsPresenter {
   }
 
   #renderExtraContainer(title, films, container) {
-    const extraContainer = new FilmsExtraContainerView(title);
+    const extraContainer = new FilmsListContainerView(title, true);
     render(extraContainer, container);
-    const extraFilmsContainer = extraContainer.element.querySelector('.films-list__container');
     for (const film of films) {
-      this.#renderFilm(film, extraFilmsContainer);
+      this.#renderFilm(film, extraContainer.getFilmsContainer());
     }
   }
 
@@ -108,24 +102,27 @@ export default class FilmsPresenter {
     render(new MainNavigationView(), this.#mainContainer);
 
     if (this.#films.length === 0) {
-      render(new EmptyFilmsListView(filmsContainerTitles.NoMovies), this.#mainContainer);
+      render(this.#filmsContainer, this.#mainContainer);
+      render(new FilmsListContainerView(FilmsContainerTitles.NO_MOVIES, false, true), this.#filmsContainer.element);
     } else {
+      this.#filmsListContainer = new FilmsListContainerView(FilmsContainerTitles.ALL_MOVIES);
       render(new SortView(), this.#mainContainer);
       render(this.#filmsContainer, this.#mainContainer);
+      render(this.#filmsListContainer, this.#filmsContainer.element);
 
       for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
         this.#renderFilm(this.#films[i]);
       }
 
       if (this.#films.length > FILMS_COUNT_PER_STEP) {
-        render(this.#showMoreButtonComponent, this.#filmsListElement);
+        render(this.#showMoreButtonComponent, this.#filmsListContainer.element);
         this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClick);
       }
 
       const filmsSortByRate = this.#films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       const filmsSortByComments = this.#films.slice().sort((a, b) => b.comments.length - a.comments.length);
-      this.#renderExtraContainer(filmsContainerTitles.TopRated, filmsSortByRate.slice(0, 2), this.#filmsSectionElement);
-      this.#renderExtraContainer(filmsContainerTitles.MostCommented, filmsSortByComments.slice(0, 2), this.#filmsSectionElement);
+      this.#renderExtraContainer(FilmsContainerTitles.TOP_RATED, filmsSortByRate.slice(0, 2), this.#filmsContainer.element);
+      this.#renderExtraContainer(FilmsContainerTitles.MOST_COMMENTED, filmsSortByComments.slice(0, 2), this.#filmsContainer.element);
     }
   }
 }

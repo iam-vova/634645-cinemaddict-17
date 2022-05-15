@@ -1,4 +1,4 @@
-import {generateRandomDate, getRandomInteger, getRandomArrItems} from '../utils';
+import {generateRandomDate, getRandomInteger, getRandomArrItems} from '../utils/common';
 import {commentsCount} from '../constants';
 import {emojiNames} from '../constants';
 

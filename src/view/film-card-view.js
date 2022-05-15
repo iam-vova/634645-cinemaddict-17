@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import {getTimeFromMins} from '../utils';
+import {getTimeFromMins} from '../utils/film';
 
 const createFilmCardTemplate = (film) => {
   const commentsCount = film.comments.length;
