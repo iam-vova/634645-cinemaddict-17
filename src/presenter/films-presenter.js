@@ -7,6 +7,7 @@ import FilmDetailsPopupView from '../view/film-details-popup-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
 import CommentView from '../view/comment-view';
 import {FilmsContainerTitles} from '../constants';
+import {generateFilters} from '../mock/filter';
 import {render} from '../framework/render';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -99,7 +100,8 @@ export default class FilmsPresenter {
   }
 
   #renderPage() {
-    render(new MainNavigationView(), this.#mainContainer);
+    const filters = generateFilters(this.#films);
+    render(new MainNavigationView(filters), this.#mainContainer);
 
     if (this.#films.length === 0) {
       render(this.#filmsContainer, this.#mainContainer);

@@ -18,10 +18,11 @@ const FilmsContainerTitles = {
 };
 
 const FilterTypes = {
-  WATCHLIST: 'watchlist',
-  HISTORY: 'history',
-  FAVORITES: 'favorites',
-}
+  ALL: 'All movies',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
+};
 
 export {
   emojiNames,
