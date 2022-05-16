@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import {getTimeFromMins, humanizeFilmDate} from '../utils';
+import {getTimeFromMins, humanizeFilmDate} from '../utils/film';
 import {emojiNames} from '../constants';
 
 const createFilmDetailsPopupTemplate = (film) => {

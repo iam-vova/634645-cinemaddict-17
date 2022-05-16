@@ -18,4 +18,3 @@ const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, commentsM
 render(new UserRankView(), siteHeaderElement);
 
 filmsPresenter.init();
-

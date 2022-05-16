@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomArrItems, generateRandomDate} from '../utils';
+import {getRandomInteger, getRandomArrItems, generateRandomDate} from '../utils/common';
 import {commentsCount} from '../constants';
 
 const RUN_TIME_MIN = 50;
