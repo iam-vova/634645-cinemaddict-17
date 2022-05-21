@@ -146,4 +146,8 @@ export default class FilmDetailsPopupView extends AbstractView {
     evt.preventDefault();
     this._callback.click();
   };
+
+  getCommentsContainer() {
+    return this.element.querySelector('.film-details__comments-list');
+  }
 }

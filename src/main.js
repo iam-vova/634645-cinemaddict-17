@@ -1,5 +1,5 @@
 import UserRankView from './view/user-rank-view';
-import FilmsPresenter from './presenter/films-presenter';
+import PagePresenter from './presenter/page-presenter';
 import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';
 import {render} from './framework/render';
@@ -13,7 +13,7 @@ const films = generateFilms();
 const filmsModel = new FilmsModel(films);
 const comments = generateComments();
 const commentsModel = new CommentsModel(comments);
-const filmsPresenter = new FilmsPresenter(siteMainElement, filmsModel, commentsModel);
+const filmsPresenter = new PagePresenter(siteMainElement, filmsModel, commentsModel);
 
 render(new UserRankView(), siteHeaderElement);
 
