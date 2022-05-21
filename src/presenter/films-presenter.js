@@ -77,6 +77,42 @@ export default class FilmsPresenter {
     render(filmComponent, container);
   }
 
+  #renderFilters = () => {
+    const filters = generateFilters(this.#films);
+    render(new MainNavigationView(filters), this.#mainContainer);
+  };
+
+  #renderSort = () => {
+    render(new SortView(), this.#mainContainer);
+  };
+
+  #renderFilmsContainer = () => {
+    render(this.#filmsContainer, this.#mainContainer);
+  };
+
+  #renderShowMoreButton = (container) => {
+    render(this.#showMoreButtonComponent, container);
+    this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClick);
+  };
+
+  #renderFilmsListContainer = () => {
+    this.#filmsListContainer = new FilmsListContainerView(FilmsContainerTitles.ALL_MOVIES);
+    render(this.#filmsListContainer, this.#filmsContainer.element);
+
+    for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
+      this.#renderFilm(this.#films[i]);
+    }
+
+    if (this.#films.length > FILMS_COUNT_PER_STEP) {
+      this.#renderShowMoreButton(this.#filmsListContainer.element);
+    }
+  };
+
+  #renderNoFilms = () => {
+    this.#renderFilmsContainer();
+    render(new FilmsListContainerView(FilmsContainerTitles.NO_MOVIES, false, true), this.#filmsContainer.element);
+  };
+
   #renderExtraContainer(title, films, container) {
     const extraContainer = new FilmsListContainerView(title, true);
     render(extraContainer, container);
@@ -85,44 +121,40 @@ export default class FilmsPresenter {
     }
   }
 
-  #renderFilmDetailsPopupView(film) {
-    this.#filmDetailsPopup = new FilmDetailsPopupView(film);
-    this.#siteBodyElement.classList.add('hide-overflow');
-    render(this.#filmDetailsPopup, this.#siteBodyElement);
+  #renderComments = (film) => {
     const commentsContainer = this.#filmDetailsPopup.element.querySelector('.film-details__comments-list');
-
-    document.addEventListener('keydown', this.#onEscKeyDown);
-    this.#filmDetailsPopup.setCloseClickHandler(this.#removeFilmDetailsPopupView);
 
     for (const comment of film.comments) {
       render(new CommentView(this.#comments[comment]), commentsContainer);
     }
+  };
+
+  #renderFilmDetailsPopupView(film) {
+    this.#filmDetailsPopup = new FilmDetailsPopupView(film);
+    this.#siteBodyElement.classList.add('hide-overflow');
+    render(this.#filmDetailsPopup, this.#siteBodyElement);
+
+    document.addEventListener('keydown', this.#onEscKeyDown);
+    this.#filmDetailsPopup.setCloseClickHandler(this.#removeFilmDetailsPopupView);
+    this.#renderComments(film);
   }
 
   #renderPage() {
-    const filters = generateFilters(this.#films);
-    render(new MainNavigationView(filters), this.#mainContainer);
+    this.#renderFilters();
 
     if (this.#films.length === 0) {
-      render(this.#filmsContainer, this.#mainContainer);
-      render(new FilmsListContainerView(FilmsContainerTitles.NO_MOVIES, false, true), this.#filmsContainer.element);
+      this.#renderNoFilms();
     } else {
-      this.#filmsListContainer = new FilmsListContainerView(FilmsContainerTitles.ALL_MOVIES);
-      render(new SortView(), this.#mainContainer);
-      render(this.#filmsContainer, this.#mainContainer);
-      render(this.#filmsListContainer, this.#filmsContainer.element);
+      this.#renderSort();
+      this.#renderFilmsContainer();
+      this.#renderFilmsListContainer();
 
-      for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
-        this.#renderFilm(this.#films[i]);
-      }
-
-      if (this.#films.length > FILMS_COUNT_PER_STEP) {
-        render(this.#showMoreButtonComponent, this.#filmsListContainer.element);
-        this.#showMoreButtonComponent.setClickHandler(this.#onShowMoreButtonClick);
-      }
-
-      const filmsSortByRate = this.#films.slice().sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
-      const filmsSortByComments = this.#films.slice().sort((a, b) => b.comments.length - a.comments.length);
+      const filmsSortByRate = this.#films
+        .slice()
+        .sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+      const filmsSortByComments = this.#films
+        .slice()
+        .sort((a, b) => b.comments.length - a.comments.length);
       this.#renderExtraContainer(FilmsContainerTitles.TOP_RATED, filmsSortByRate.slice(0, 2), this.#filmsContainer.element);
       this.#renderExtraContainer(FilmsContainerTitles.MOST_COMMENTED, filmsSortByComments.slice(0, 2), this.#filmsContainer.element);
     }

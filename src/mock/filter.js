@@ -1,9 +1,9 @@
 import {filter} from '../utils/filter';
 
 export const generateFilters = (films) => Object.entries(filter).map(
-  ([filterName, filterTasks]) => ({
+  ([filterName, filterFilms]) => ({
     name: filterName,
-    count: filterTasks(films).length,
+    count: filterFilms(films).length,
   }),
 );
 
