@@ -6,7 +6,8 @@ import ShowMoreButtonView from '../view/show-more-button-view';
 import {FilmsContainerTitles} from '../constants';
 import FilmPresenter from './film-presenter';
 import {generateFilters} from '../mock/filter';
-import {render} from '../framework/render';
+import {render, remove} from '../framework/render';
+import {updateItem} from '../utils/common';
 
 const FILMS_COUNT_PER_STEP = 5;
 
@@ -20,6 +21,7 @@ export default class FilmsPresenter {
   #filmsListContainer = null;
   #showMoreButtonComponent = new ShowMoreButtonView();
   #renderedFilmsCount = FILMS_COUNT_PER_STEP;
+  #filmPresenter = new Map();
 
   constructor(mainContainer, filmsModel, commentsModel) {
     this.#mainContainer = mainContainer;
@@ -46,10 +48,13 @@ export default class FilmsPresenter {
     }
   };
 
+  #getFilmComments = (film) => this.#comments.filter((item) => film.comments.includes(item.id));
+
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer()) {
-    const filmComponent = new FilmPresenter(container);
-    const filmComments = this.#comments.filter((item) => film.comments.includes(item.id));
-    filmComponent.init(film, filmComments);
+    const filmComponent = new FilmPresenter(container, this.#handleFilmChange, this.#handleModeChange);
+
+    filmComponent.init(film, this.#getFilmComments(film));
+    this.#filmPresenter.set(film.id, filmComponent);
   }
 
   #renderFilters() {
@@ -91,6 +96,7 @@ export default class FilmsPresenter {
   #renderExtraContainer(title, films, container) {
     const extraContainer = new FilmsListContainerView(title, true);
     render(extraContainer, container);
+
     for (const film of films) {
       this.#renderFilm(film, extraContainer.getFilmsContainer());
     }
@@ -110,6 +116,22 @@ export default class FilmsPresenter {
       FilmsContainerTitles.MOST_COMMENTED, filmsSortByComments.slice(0, 2), this.#filmsContainer.element
     );
   }
+
+  #clearFilmsList = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
+    remove(this.#showMoreButtonComponent);
+  };
+
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#getFilmComments(updatedFilm));
+  };
+
+  #handleModeChange = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.resetView());
+  };
 
   #renderPage() {
     this.#renderFilters();
