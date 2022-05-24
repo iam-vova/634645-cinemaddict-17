@@ -51,6 +51,7 @@ export default class FilmPresenter {
 
     if (this.#siteBodyElement.contains(prevFilmDetailsPopupComponent.element)) {
       replace(this.#filmDetailsPopup, prevFilmDetailsPopupComponent);
+      this.#renderComments();
       this.#addPopupHandlers();
     }
 

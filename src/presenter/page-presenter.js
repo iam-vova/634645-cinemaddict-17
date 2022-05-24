@@ -50,11 +50,16 @@ export default class FilmsPresenter {
 
   #getFilmComments = (film) => this.#comments.filter((item) => film.comments.includes(item.id));
 
-  #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer()) {
-    const filmComponent = new FilmPresenter(container, this.#handleFilmChange, this.#handleModeChange);
+  #pushPresenter = (id, presenter) => this.#filmPresenter.has(id)
+    ? this.#filmPresenter.get(id).push(presenter)
+    : this.#filmPresenter.set(id, [presenter]);
 
-    filmComponent.init(film, this.#getFilmComments(film));
-    this.#filmPresenter.set(film.id, filmComponent);
+  #getPresenters = (id) => this.#filmPresenter.get(id);
+
+  #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer()) {
+    const filmPresenter = new FilmPresenter(container, this.#handleFilmChange, this.#handleModeChange);
+    filmPresenter.init(film, this.#getFilmComments(film));
+    this.#pushPresenter(film.id, filmPresenter);
   }
 
   #renderFilters() {
@@ -118,7 +123,11 @@ export default class FilmsPresenter {
   }
 
   #clearFilmsList = () => {
-    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.forEach(
+      (presenters) => presenters.forEach(
+        (presenter) => presenter.destroy()
+      )
+    );
     this.#filmPresenter.clear();
     this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
     remove(this.#showMoreButtonComponent);
@@ -126,11 +135,17 @@ export default class FilmsPresenter {
 
   #handleFilmChange = (updatedFilm) => {
     this.#films = updateItem(this.#films, updatedFilm);
-    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#getFilmComments(updatedFilm));
+    this.#getPresenters(updatedFilm.id).forEach(
+      (presenter) => presenter.init(updatedFilm, this.#getFilmComments(updatedFilm))
+    );
   };
 
   #handleModeChange = () => {
-    this.#filmPresenter.forEach((presenter) => presenter.resetView());
+    this.#filmPresenter.forEach(
+      (presenters) => presenters.forEach(
+        (presenter) => presenter.resetView()
+      )
+    );
   };
 
   #renderPage() {
