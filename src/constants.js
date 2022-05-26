@@ -24,9 +24,17 @@ const FilterTypes = {
   FAVORITES: 'Favorites',
 };
 
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATE: 'rate',
+  COMMENTS: 'comments',
+};
+
 export {
   emojiNames,
   commentsCount,
   FilmsContainerTitles,
   FilterTypes,
+  SortType,
 };
