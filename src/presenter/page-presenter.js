@@ -119,14 +119,14 @@ export default class FilmsPresenter {
   }
 
   #renderExtraContainers() {
-    this.#sortFilms(SortType.RATE);
+    const topRatedFilms = this.#sortFilms(SortType.RATE, this.#films.slice());
     this.#renderExtraContainer(
-      FilmsContainerTitles.TOP_RATED, this.#films.slice(0, 2), this.#filmsContainer.element
+      FilmsContainerTitles.TOP_RATED, topRatedFilms.slice(0, 2), this.#filmsContainer.element
     );
 
-    this.#sortFilms(SortType.COMMENTS);
+    const mostCommentedFilms = this.#sortFilms(SortType.COMMENTS, this.#films.slice());
     this.#renderExtraContainer(
-      FilmsContainerTitles.MOST_COMMENTED, this.#films.slice(0, 2), this.#filmsContainer.element
+      FilmsContainerTitles.MOST_COMMENTED, mostCommentedFilms.slice(0, 2), this.#filmsContainer.element
     );
   }
 
@@ -139,22 +139,19 @@ export default class FilmsPresenter {
     this.#filmPresenter.clear();
   };
 
-  #sortFilms = (sortType) => {
+  #sortFilms = (sortType, films = this.#films) => {
+    this.#currentSortType = sortType;
+
     switch (sortType) {
       case SortType.DATE:
-        this.#films.sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
-        break;
+        return films.sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
       case SortType.RATE:
-        this.#films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
-        break;
+        return films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       case SortType.COMMENTS:
-        this.#films.sort((a, b) => b.comments.length - a.comments.length);
-        break;
+        return films.sort((a, b) => b.comments.length - a.comments.length);
       default:
-        this.#films = this.#sourcedFilms.slice();
+        return this.#films = [...this.#sourcedFilms];
     }
-
-    this.#currentSortType = sortType;
   };
 
   #handleFilmChange = (updatedFilm) => {
