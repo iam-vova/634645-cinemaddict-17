@@ -16,7 +16,7 @@ const userNames = [
 const generateComment = (commentId) => ({
   id: commentId,
   author: getRandomArrItems(userNames),
-  comment: commentGeneral.slice(0, getRandomInteger(0, commentGeneral.length - 1)),
+  text: commentGeneral.slice(0, getRandomInteger(0, commentGeneral.length - 1)),
   date: generateRandomDate(),
   emotion: getRandomArrItems(emojiNames)
 });

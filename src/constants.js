@@ -5,7 +5,7 @@ const emojiNames = [
   'angry'
 ];
 
-const commentsCount = 40;
+const commentsCount = 3;
 
 const FilmsContainerTitles = {
   ALL_MOVIES: 'All movies. Upcoming',
@@ -31,10 +31,17 @@ const SortType = {
   COMMENTS: 'comments',
 };
 
+const UpdateTypes = {
+  USER_DETAILS: 'userDetails',
+  COMMENT_ADD: 'commentAdd',
+  COMMENT_DEL: 'commentDel',
+};
+
 export {
   emojiNames,
   commentsCount,
   FilmsContainerTitles,
   FilterTypes,
   SortType,
+  UpdateTypes,
 };

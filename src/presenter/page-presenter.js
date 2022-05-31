@@ -3,7 +3,7 @@ import FilmsListContainerView from '../view/films-list-container-view';
 import MainNavigationView from '../view/main-navigation-view';
 import SortView from '../view/sort-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
-import {FilmsContainerTitles} from '../constants';
+import {FilmsContainerTitles, UpdateTypes} from '../constants';
 import FilmPresenter from './film-presenter';
 import {generateFilters} from '../mock/filter';
 import {render} from '../framework/render';
@@ -62,7 +62,11 @@ export default class FilmsPresenter {
   #getPresenters = (id) => this.#filmPresenter.get(id);
 
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer()) {
-    const filmPresenter = new FilmPresenter(container, this.#handleFilmChange, this.#handleModeChange);
+    const filmPresenter = new FilmPresenter(
+      container,
+      this.#handleFilmChange,
+      this.#handleModeChange,
+    );
     filmPresenter.init(film, this.#getFilmComments(film));
     this.#pushPresenter(film.id, filmPresenter);
   }
@@ -154,9 +158,17 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleFilmChange = (updatedFilm) => {
-    this.#films = updateItem(this.#films, updatedFilm);
-    this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
+  #handleFilmChange = (updateType, updatedFilm, newComment) => {
+    switch (updateType) {
+      case UpdateTypes.USER_DETAILS:
+        this.#films = updateItem(this.#films, updatedFilm);
+        this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
+        break;
+      case UpdateTypes.COMMENT_ADD:
+        this.#comments.push(newComment);
+        break;
+    }
+
     this.#getPresenters(updatedFilm.id).forEach(
       (presenter) => presenter.init(updatedFilm, this.#getFilmComments(updatedFilm))
     );
