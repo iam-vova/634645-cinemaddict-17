@@ -62,12 +62,6 @@ export default class CommentAddView extends AbstractStatefulView {
     return comment;
   }
 
-  reset = () => {
-    this.updateElement(
-      CommentAddView.parseCommentToState(BLANK_COMMENT),
-    );
-  };
-
   setCommentAddHandler = (callback) => {
     this._callback.addComment = callback;
     document.addEventListener('keydown', this.#commentAddHandler);
@@ -91,8 +85,9 @@ export default class CommentAddView extends AbstractStatefulView {
   #commentAddHandler = (evt) => {
     if ((evt.ctrlKey || evt.metaKey) && (evt.key === 'Enter')) {
       evt.preventDefault();
-      if (this._state.emotion && this._state.text) {
+      if (this._state.emotion.length > 0 && this._state.text) {
         this._callback.addComment(CommentAddView.parseStateToComment(this._state));
+        this._state = CommentAddView.parseCommentToState(BLANK_COMMENT)
       }
     };
   };

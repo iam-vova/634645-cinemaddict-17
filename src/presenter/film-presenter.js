@@ -19,9 +19,9 @@ export default class FilmPresenter {
   #filmComments = [];
   #changeData = null;
   #changeMode = null;
-  #scrollPosition = null;
   #siteBodyElement = document.querySelector('body');
   #mode = Mode.DEFAULT;
+  #scrollPosition = 0;
 
   constructor(filmsContainer, changeData, changeMode) {
     this.#filmsContainer = filmsContainer;
@@ -61,6 +61,10 @@ export default class FilmPresenter {
       this.#addPopupHandlers();
     }
 
+    this.#filmDetailsPopup.element.scroll({
+      top : this.#scrollPosition,
+    });
+
     remove(prevFilmComponent);
     remove(prevFilmDetailsPopupComponent);
   };
@@ -81,6 +85,7 @@ export default class FilmPresenter {
     this.#siteBodyElement.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#mode = Mode.DETAILS;
+    this.#filmDetailsPopup.element.scrollTop = this.#scrollPosition;
   };
 
   #addPopupHandlers = () => {
@@ -112,11 +117,9 @@ export default class FilmPresenter {
   }
 
   #handleCommentAdd = (newComment) => {
+    this.#updateScrollPosition();
     this.#film.comments.push(newComment.id);
     this.#changeData(UpdateTypes.COMMENT_ADD, this.#film, newComment);
-    this.#commentAddComponent.reset();
-    this.#removeFilmDetailsPopupView();
-    this.#renderFilmDetailsPopupView();
   };
 
   #handleFilmClick = () => {
@@ -127,6 +130,7 @@ export default class FilmPresenter {
   };
 
   #handleWatchlistClick = () => {
+    this.#updateScrollPosition();
     this.#changeData(
       UpdateTypes.USER_DETAILS,
       {...this.#film,
@@ -139,6 +143,7 @@ export default class FilmPresenter {
   };
 
   #handleWatchedClick = () => {
+    this.#updateScrollPosition();
     this.#changeData(
       UpdateTypes.USER_DETAILS,
       {...this.#film,
@@ -151,6 +156,7 @@ export default class FilmPresenter {
   };
 
   #handleFavoriteClick = () => {
+    this.#updateScrollPosition();
     this.#changeData(
       UpdateTypes.USER_DETAILS,
       {...this.#film,
@@ -161,6 +167,10 @@ export default class FilmPresenter {
           }
       });
   };
+
+  #updateScrollPosition = () => {
+    this.#scrollPosition = this.#filmDetailsPopup.element.scrollTop;
+  }
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
