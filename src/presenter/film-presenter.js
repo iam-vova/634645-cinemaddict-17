@@ -170,7 +170,7 @@ export default class FilmPresenter {
 
   #updateScrollPosition = () => {
     this.#scrollPosition = this.#filmDetailsPopup.element.scrollTop;
-  }
+  };
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {

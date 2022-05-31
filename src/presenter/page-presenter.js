@@ -154,7 +154,7 @@ export default class FilmsPresenter {
       case SortType.COMMENTS:
         return films.sort((a, b) => b.comments.length - a.comments.length);
       default:
-        return this.#films = [...this.#sourcedFilms];
+        this.#films = [...this.#sourcedFilms];
     }
   };
 
