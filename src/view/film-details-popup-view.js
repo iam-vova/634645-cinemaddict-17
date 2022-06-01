@@ -1,6 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
 import {getTimeFromMins, humanizeFilmDate} from '../utils/film';
-import {emojiNames} from '../constants';
 
 const createFilmDetailsPopupTemplate = (film) => {
   const commentsCount = film.comments.length;
@@ -103,21 +102,6 @@ const createFilmDetailsPopupTemplate = (film) => {
             <ul class="film-details__comments-list">
 
             </ul>
-
-            <div class="film-details__new-comment">
-              <div class="film-details__add-emoji-label"></div>
-
-              <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-              </label>
-
-              <div class="film-details__emoji-list">
-                ${emojiNames.map((item) => (`<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${item}" value="smile">
-                   <label class="film-details__emoji-label" for="emoji-${item}">
-                     <img src="./images/emoji/${item}.png" width="30" height="30" alt="emoji">
-                   </label>`)).join('')}
-              </div>
-            </div>
           </section>
         </div>
       </form>
@@ -181,6 +165,10 @@ export default class FilmDetailsPopupView extends AbstractView {
   };
 
   getCommentsContainer() {
+    return this.element.querySelector('.film-details__comments-wrap');
+  }
+
+  getCommentsListContainer() {
     return this.element.querySelector('.film-details__comments-list');
   }
 }

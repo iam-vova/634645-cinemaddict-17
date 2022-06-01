@@ -2,6 +2,8 @@ import {render, replace, remove} from '../framework/render';
 import FilmDetailsPopupView from '../view/film-details-popup-view';
 import FilmCardView from '../view/film-card-view';
 import CommentView from '../view/comment-view';
+import CommentAddView from '../view/comment-add-view';
+import {UpdateTypes} from '../constants';
 
 const Mode = {
   DEFAULT: 'default',
@@ -13,11 +15,13 @@ export default class FilmPresenter {
   #film = null;
   #filmComponent = null;
   #filmDetailsPopup = null;
+  #commentAddComponent = null;
   #filmComments = [];
   #changeData = null;
   #changeMode = null;
   #siteBodyElement = document.querySelector('body');
   #mode = Mode.DEFAULT;
+  #scrollPosition = 0;
 
   constructor(filmsContainer, changeData, changeMode) {
     this.#filmsContainer = filmsContainer;
@@ -34,6 +38,7 @@ export default class FilmPresenter {
 
     this.#filmComponent = new FilmCardView(this.#film);
     this.#filmDetailsPopup = new FilmDetailsPopupView(this.#film);
+    this.#commentAddComponent = new CommentAddView();
 
     this.#filmComponent.setClickHandler(this.#handleFilmClick);
     this.#filmComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -52,8 +57,13 @@ export default class FilmPresenter {
     if (this.#siteBodyElement.contains(prevFilmDetailsPopupComponent.element)) {
       replace(this.#filmDetailsPopup, prevFilmDetailsPopupComponent);
       this.#renderComments();
+      this.#renderCommentAddView();
       this.#addPopupHandlers();
     }
+
+    this.#filmDetailsPopup.element.scroll({
+      top : this.#scrollPosition,
+    });
 
     remove(prevFilmComponent);
     remove(prevFilmDetailsPopupComponent);
@@ -69,11 +79,13 @@ export default class FilmPresenter {
   #renderFilmDetailsPopupView = () => {
     this.#changeMode();
     this.#renderComments();
+    this.#renderCommentAddView();
     render(this.#filmDetailsPopup, this.#siteBodyElement);
     this.#addPopupHandlers();
     this.#siteBodyElement.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#mode = Mode.DETAILS;
+    this.#filmDetailsPopup.element.scrollTop = this.#scrollPosition;
   };
 
   #addPopupHandlers = () => {
@@ -81,6 +93,7 @@ export default class FilmPresenter {
     this.#filmDetailsPopup.setWatchlistClickHandler(this.#handleWatchlistClick);
     this.#filmDetailsPopup.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmDetailsPopup.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#commentAddComponent.setCommentAddHandler(this.#handleCommentAdd);
   };
 
   #removeFilmDetailsPopupView = () => {
@@ -92,12 +105,22 @@ export default class FilmPresenter {
   };
 
   #renderComments() {
-    const commentsContainer = this.#filmDetailsPopup.getCommentsContainer();
-
+    const commentsListContainer = this.#filmDetailsPopup.getCommentsListContainer();
     for (const comment of this.#filmComments) {
-      render(new CommentView(comment), commentsContainer);
+      render(new CommentView(comment), commentsListContainer);
     }
   }
+
+  #renderCommentAddView() {
+    const commentsContainer = this.#filmDetailsPopup.getCommentsContainer();
+    render (this.#commentAddComponent, commentsContainer);
+  }
+
+  #handleCommentAdd = (newComment) => {
+    this.#updateScrollPosition();
+    this.#film.comments.push(newComment.id);
+    this.#changeData(UpdateTypes.COMMENT_ADD, this.#film, newComment);
+  };
 
   #handleFilmClick = () => {
     if(this.#filmDetailsPopup) {
@@ -107,7 +130,9 @@ export default class FilmPresenter {
   };
 
   #handleWatchlistClick = () => {
+    this.#updateScrollPosition();
     this.#changeData(
+      UpdateTypes.USER_DETAILS,
       {...this.#film,
         userDetails:
           {
@@ -118,7 +143,9 @@ export default class FilmPresenter {
   };
 
   #handleWatchedClick = () => {
+    this.#updateScrollPosition();
     this.#changeData(
+      UpdateTypes.USER_DETAILS,
       {...this.#film,
         userDetails:
           {
@@ -129,7 +156,9 @@ export default class FilmPresenter {
   };
 
   #handleFavoriteClick = () => {
+    this.#updateScrollPosition();
     this.#changeData(
+      UpdateTypes.USER_DETAILS,
       {...this.#film,
         userDetails:
           {
@@ -137,6 +166,10 @@ export default class FilmPresenter {
             isFavorite: !this.#film.userDetails.isFavorite
           }
       });
+  };
+
+  #updateScrollPosition = () => {
+    this.#scrollPosition = this.#filmDetailsPopup.element.scrollTop;
   };
 
   resetView = () => {

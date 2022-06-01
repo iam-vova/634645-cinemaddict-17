@@ -3,7 +3,7 @@ import FilmsListContainerView from '../view/films-list-container-view';
 import MainNavigationView from '../view/main-navigation-view';
 import SortView from '../view/sort-view';
 import ShowMoreButtonView from '../view/show-more-button-view';
-import {FilmsContainerTitles} from '../constants';
+import {FilmsContainerTitles, UpdateTypes} from '../constants';
 import FilmPresenter from './film-presenter';
 import {generateFilters} from '../mock/filter';
 import {render} from '../framework/render';
@@ -62,7 +62,11 @@ export default class FilmsPresenter {
   #getPresenters = (id) => this.#filmPresenter.get(id);
 
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer()) {
-    const filmPresenter = new FilmPresenter(container, this.#handleFilmChange, this.#handleModeChange);
+    const filmPresenter = new FilmPresenter(
+      container,
+      this.#handleFilmChange,
+      this.#handleModeChange,
+    );
     filmPresenter.init(film, this.#getFilmComments(film));
     this.#pushPresenter(film.id, filmPresenter);
   }
@@ -119,14 +123,14 @@ export default class FilmsPresenter {
   }
 
   #renderExtraContainers() {
-    this.#sortFilms(SortType.RATE);
+    const topRatedFilms = this.#sortFilms(SortType.RATE, this.#films.slice());
     this.#renderExtraContainer(
-      FilmsContainerTitles.TOP_RATED, this.#films.slice(0, 2), this.#filmsContainer.element
+      FilmsContainerTitles.TOP_RATED, topRatedFilms.slice(0, 2), this.#filmsContainer.element
     );
 
-    this.#sortFilms(SortType.COMMENTS);
+    const mostCommentedFilms = this.#sortFilms(SortType.COMMENTS, this.#films.slice());
     this.#renderExtraContainer(
-      FilmsContainerTitles.MOST_COMMENTED, this.#films.slice(0, 2), this.#filmsContainer.element
+      FilmsContainerTitles.MOST_COMMENTED, mostCommentedFilms.slice(0, 2), this.#filmsContainer.element
     );
   }
 
@@ -139,27 +143,32 @@ export default class FilmsPresenter {
     this.#filmPresenter.clear();
   };
 
-  #sortFilms = (sortType) => {
+  #sortFilms = (sortType, films = this.#films) => {
+    this.#currentSortType = sortType;
+
     switch (sortType) {
       case SortType.DATE:
-        this.#films.sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
-        break;
+        return films.sort((a, b) => b.filmInfo.release.date - a.filmInfo.release.date);
       case SortType.RATE:
-        this.#films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
-        break;
+        return films.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       case SortType.COMMENTS:
-        this.#films.sort((a, b) => b.comments.length - a.comments.length);
-        break;
+        return films.sort((a, b) => b.comments.length - a.comments.length);
       default:
-        this.#films = this.#sourcedFilms.slice();
+        this.#films = [...this.#sourcedFilms];
     }
-
-    this.#currentSortType = sortType;
   };
 
-  #handleFilmChange = (updatedFilm) => {
-    this.#films = updateItem(this.#films, updatedFilm);
-    this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
+  #handleFilmChange = (updateType, updatedFilm, newComment) => {
+    switch (updateType) {
+      case UpdateTypes.USER_DETAILS:
+        this.#films = updateItem(this.#films, updatedFilm);
+        this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
+        break;
+      case UpdateTypes.COMMENT_ADD:
+        this.#comments.push(newComment);
+        break;
+    }
+
     this.#getPresenters(updatedFilm.id).forEach(
       (presenter) => presenter.init(updatedFilm, this.#getFilmComments(updatedFilm))
     );
