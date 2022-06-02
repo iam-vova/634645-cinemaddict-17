@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 const getTimeFromMins = (mins) => {
   const hours = Math.trunc(mins / 60);
@@ -8,7 +10,7 @@ const getTimeFromMins = (mins) => {
 
 const humanizeFilmDate = (date) => dayjs(date).format('DD MMMM YYYY');
 
-const humanizeCommentDate = (commentDate) => dayjs(commentDate).format('YYYY/MM/DD HH:mm');
+const humanizeCommentDate = (commentDate) => dayjs(commentDate).fromNow();
 
 export {
   getTimeFromMins,
