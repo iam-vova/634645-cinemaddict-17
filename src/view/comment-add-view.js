@@ -1,6 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {emojiNames} from '../constants';
-import {generateRandomDate} from '../utils/common';
 
 const createCommentAddTemplate = (comment) => {
   const {emotion, text} = comment;
@@ -38,7 +37,7 @@ const createCommentAddTemplate = (comment) => {
 const BLANK_COMMENT = {
   id: new Date().getTime(),
   author: 'Random name',
-  date: generateRandomDate(),
+  date: new Date(),
   emotion: new Array(),
   text: '',
 };
