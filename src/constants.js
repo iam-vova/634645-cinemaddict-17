@@ -31,10 +31,16 @@ const SortType = {
   COMMENTS: 'comments',
 };
 
-const UpdateTypes = {
+const UserActions = {
   USER_DETAILS: 'userDetails',
   COMMENT_ADD: 'commentAdd',
   COMMENT_DEL: 'commentDel',
+};
+
+const UpdateTypes = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
 
 export {
@@ -43,5 +49,6 @@ export {
   FilmsContainerTitles,
   FilterTypes,
   SortType,
+  UserActions,
   UpdateTypes,
 };

@@ -3,7 +3,7 @@ import FilmDetailsPopupView from '../view/film-details-popup-view';
 import FilmCardView from '../view/film-card-view';
 import CommentView from '../view/comment-view';
 import CommentAddView from '../view/comment-add-view';
-import {UpdateTypes} from '../constants';
+import {UserActions, UpdateTypes} from '../constants';
 
 const Mode = {
   DEFAULT: 'default',
@@ -119,7 +119,11 @@ export default class FilmPresenter {
   #handleCommentAdd = (newComment) => {
     this.#updateScrollPosition();
     this.#film.comments.push(newComment.id);
-    this.#changeData(UpdateTypes.COMMENT_ADD, this.#film, newComment);
+    this.#changeData(
+      UserActions.COMMENT_ADD,
+      UpdateTypes.PATCH,
+      {...this.#film, newComment}
+    );
   };
 
   #handleFilmClick = () => {
@@ -132,7 +136,8 @@ export default class FilmPresenter {
   #handleWatchlistClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UpdateTypes.USER_DETAILS,
+      UserActions.USER_DETAILS,
+      UpdateTypes.PATCH,
       {...this.#film,
         userDetails:
           {
@@ -145,7 +150,8 @@ export default class FilmPresenter {
   #handleWatchedClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UpdateTypes.USER_DETAILS,
+      UserActions.USER_DETAILS,
+      UpdateTypes.PATCH,
       {...this.#film,
         userDetails:
           {
@@ -158,7 +164,8 @@ export default class FilmPresenter {
   #handleFavoriteClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UpdateTypes.USER_DETAILS,
+      UserActions.USER_DETAILS,
+      UpdateTypes.PATCH,
       {...this.#film,
         userDetails:
           {
