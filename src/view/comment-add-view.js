@@ -54,7 +54,8 @@ export default class CommentAddView extends AbstractStatefulView {
   }
 
   static parseCommentToState = (comment) => ({
-    ...comment
+    ...comment,
+    id: new Date().getTime(),
   });
 
   static parseStateToComment = (state) => {

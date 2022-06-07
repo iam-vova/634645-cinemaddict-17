@@ -7,7 +7,6 @@ import {FilmsContainerTitles, SortType, UserActions, UpdateTypes} from '../const
 import FilmPresenter from './film-presenter';
 import {generateFilters} from '../mock/filter';
 import {remove, render, RenderPosition} from '../framework/render';
-import {updateItem} from '../utils/common';
 import {sortFilmsByDate, sortFilmsByRate, sortFilmsByComments} from '../utils/film';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -16,9 +15,6 @@ export default class FilmsPresenter {
   #mainContainer = null;
   #filmsModel = null;
   #commentsModel = null;
-  // #films = [];
-  // #sourcedFilms = [];
-  #comments = [];
   #filmsContainer = new FilmsContainerView();
   #filmsListContainer = null;
   #sortComponent = null;
@@ -34,6 +30,7 @@ export default class FilmsPresenter {
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
@@ -49,10 +46,11 @@ export default class FilmsPresenter {
     return this.#filmsModel.films;
   }
 
+  get comments() {
+    return this.#commentsModel.comments;
+  }
+
   init = () => {
-    // this.#films = [...this.#filmsModel.films];
-    // this.#sourcedFilms = [...this.#filmsModel.films];
-    this.#comments = [...this.#commentsModel.comments];
     this.#renderPage();
   };
 
@@ -69,7 +67,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #getFilmComments = (film) => this.#comments.filter((item) => film.comments.includes(item.id));
+  #getFilmComments = (film) => this.comments.filter((item) => film.comments.includes(item.id));
 
   #pushPresenter = (id, presenter, extraContainer) => {
     switch (extraContainer) {
@@ -173,33 +171,18 @@ export default class FilmsPresenter {
     this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
   };
 
-  // #handleFilmChange = (updateType, updatedFilm, newComment) => {
-  //   switch (updateType) {
-  //     case UserActions.USER_DETAILS:
-  //       // this.#films = updateItem(this.#films, updatedFilm);
-  //       // this.#sourcedFilms = updateItem(this.#sourcedFilms, updatedFilm);
-  //       break;
-  //     case UserActions.COMMENT_ADD:
-  //       this.#comments.push(newComment);
-  //       break;
-  //   }
-  //
-  //   this.#getPresenters(updatedFilm.id).forEach(
-  //     (presenter) => presenter.init(updatedFilm, this.#getFilmComments(updatedFilm))
-  //   );
-  // };
-
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserActions.USER_DETAILS:
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserActions.COMMENT_ADD:
-        this.#comments.push(update.newComment);
+        this.#commentsModel.addComment(updateType, update.newComment);
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserActions.COMMENT_DEL:
-
+        this.#commentsModel.deleteComment(updateType, update);
+        this.#filmsModel.updateFilm(updateType, update);
         break;
     }
   };
@@ -208,17 +191,15 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateTypes.PATCH:
         this.#getPresenters(data.id).forEach(
-              (presenter) => presenter.init(data, this.#getFilmComments(data))
-            );
+          (presenter) => presenter.init(data, this.#getFilmComments(data))
+        );
         break;
       case UpdateTypes.MINOR:
         this.#getPresenters(data.id).forEach(
           (presenter) => presenter.init(data, this.#getFilmComments(data))
         );
-        // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateTypes.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         break;
     }
   };
@@ -257,7 +238,7 @@ export default class FilmsPresenter {
     this.#renderFilters();
 
     if (filmsCount === 0) {
-      this.#renderNoFilms()
+      this.#renderNoFilms();
       return;
     }
 

@@ -17,6 +17,7 @@ export default class FilmPresenter {
   #filmDetailsPopup = null;
   #commentAddComponent = null;
   #filmComments = [];
+  #filmCommentsView = new Map();
   #changeData = null;
   #changeMode = null;
   #siteBodyElement = document.querySelector('body');
@@ -94,6 +95,15 @@ export default class FilmPresenter {
     this.#filmDetailsPopup.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmDetailsPopup.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#commentAddComponent.setCommentAddHandler(this.#handleCommentAdd);
+    this.#filmCommentsView.forEach(
+      (commentView) => commentView.setCommentDelClickHandler(this.#handleCommentDel)
+    );
+    // this.#filmCommentsView.forEach(
+    //   (comment) => {
+    //     console.log(comment);
+    //     comment.setCommentDelClickHandler(this.#handleCommentDel)
+    //   }
+    // );
   };
 
   #removeFilmDetailsPopupView = () => {
@@ -107,7 +117,10 @@ export default class FilmPresenter {
   #renderComments() {
     const commentsListContainer = this.#filmDetailsPopup.getCommentsListContainer();
     for (const comment of this.#filmComments) {
-      render(new CommentView(comment), commentsListContainer);
+      const commentView = new CommentView(comment);
+      // commentView.setCommentDelClickHandler(this.#handleCommentDel);
+      this.#filmCommentsView.set(comment.id, commentView);
+      render(commentView, commentsListContainer);
     }
   }
 
@@ -123,6 +136,16 @@ export default class FilmPresenter {
       UserActions.COMMENT_ADD,
       UpdateTypes.PATCH,
       {...this.#film, newComment}
+    );
+  };
+
+  #handleCommentDel = (comment) => {
+    this.#updateScrollPosition();
+    this.#film.comments = this.#film.comments.filter((item) => item !== comment.id);
+    this.#changeData(
+      UserActions.COMMENT_DEL,
+      UpdateTypes.PATCH,
+      {...this.#film, comment}
     );
   };
 
