@@ -98,12 +98,6 @@ export default class FilmPresenter {
     this.#filmCommentsView.forEach(
       (commentView) => commentView.setCommentDelClickHandler(this.#handleCommentDel)
     );
-    // this.#filmCommentsView.forEach(
-    //   (comment) => {
-    //     console.log(comment);
-    //     comment.setCommentDelClickHandler(this.#handleCommentDel)
-    //   }
-    // );
   };
 
   #removeFilmDetailsPopupView = () => {
@@ -160,7 +154,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      UpdateTypes.PATCH,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
       {...this.#film,
         userDetails:
           {
@@ -174,7 +168,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      UpdateTypes.PATCH,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
       {...this.#film,
         userDetails:
           {
@@ -188,7 +182,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      UpdateTypes.PATCH,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
       {...this.#film,
         userDetails:
           {
