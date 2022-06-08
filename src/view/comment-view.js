@@ -1,4 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
+import he from 'he';
 import {humanizeCommentDate} from '../utils/film';
 
 const createCommentTemplate = (item) => {
@@ -10,7 +11,7 @@ const createCommentTemplate = (item) => {
         <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
       </span>
       <div>
-        <p class="film-details__comment-text">${text}</p>
+        <p class="film-details__comment-text">${he.encode(text)}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>

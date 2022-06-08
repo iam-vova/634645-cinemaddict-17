@@ -1,5 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {emojiNames} from '../constants';
+import he from 'he';
 
 const createCommentAddTemplate = (comment) => {
   const {emotion, text} = comment;
@@ -14,7 +15,7 @@ const createCommentAddTemplate = (comment) => {
           class="film-details__comment-input"
           placeholder="Select reaction below and write comment here"
           name="comment"
-          >${text}</textarea>
+          >${he.encode(text)}</textarea>
       </label>
       <div class="film-details__emoji-list">
         ${emojiNames.map((item) => (
