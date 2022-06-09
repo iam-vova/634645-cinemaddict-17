@@ -11,10 +11,6 @@ const FilmsContainerTitles = {
   ALL_MOVIES: 'All movies. Upcoming',
   TOP_RATED: 'Top rated',
   MOST_COMMENTED: 'Most commented',
-  NO_MOVIES: 'There are no movies in our database',
-  NO_WATCHLIST: 'There are no movies to watch now',
-  NO_HISTORY: 'There are no watched movies now',
-  NO_FAVORITES: 'There are no favorite movies now',
 };
 
 const FilterTypes = {
@@ -24,6 +20,13 @@ const FilterTypes = {
   FAVORITES: 'Favorites',
 };
 
+const FilmsEmptyContainerTitles = {
+  [FilterTypes.ALL]: 'There are no movies in our database',
+  [FilterTypes.WATCHLIST]: 'There are no movies to watch now',
+  [FilterTypes.HISTORY]: 'There are no watched movies now',
+  [FilterTypes.FAVORITES]: 'There are no favorite movies now',
+};
+
 const SortType = {
   DEFAULT: 'default',
   DATE: 'date',
@@ -31,17 +34,25 @@ const SortType = {
   COMMENTS: 'comments',
 };
 
-const UpdateTypes = {
+const UserActions = {
   USER_DETAILS: 'userDetails',
   COMMENT_ADD: 'commentAdd',
   COMMENT_DEL: 'commentDel',
+};
+
+const UpdateTypes = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
 
 export {
   emojiNames,
   commentsCount,
   FilmsContainerTitles,
+  FilmsEmptyContainerTitles,
   FilterTypes,
   SortType,
+  UserActions,
   UpdateTypes,
 };

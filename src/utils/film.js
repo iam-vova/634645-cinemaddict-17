@@ -12,8 +12,17 @@ const humanizeFilmDate = (date) => dayjs(date).format('DD MMMM YYYY');
 
 const humanizeCommentDate = (commentDate) => dayjs(commentDate).fromNow();
 
+const sortFilmsByDate = (filmA, filmB) => filmB.filmInfo.release.date - filmA.filmInfo.release.date;
+
+const sortFilmsByRate = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
+
+const sortFilmsByComments = (filmA, filmB) => filmB.comments.length - filmA.comments.length;
+
 export {
   getTimeFromMins,
   humanizeFilmDate,
-  humanizeCommentDate
+  humanizeCommentDate,
+  sortFilmsByDate,
+  sortFilmsByRate,
+  sortFilmsByComments,
 };

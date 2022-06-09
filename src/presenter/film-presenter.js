@@ -3,7 +3,7 @@ import FilmDetailsPopupView from '../view/film-details-popup-view';
 import FilmCardView from '../view/film-card-view';
 import CommentView from '../view/comment-view';
 import CommentAddView from '../view/comment-add-view';
-import {UpdateTypes} from '../constants';
+import {UserActions, UpdateTypes} from '../constants';
 
 const Mode = {
   DEFAULT: 'default',
@@ -17,6 +17,7 @@ export default class FilmPresenter {
   #filmDetailsPopup = null;
   #commentAddComponent = null;
   #filmComments = [];
+  #filmCommentsView = new Map();
   #changeData = null;
   #changeMode = null;
   #siteBodyElement = document.querySelector('body');
@@ -94,6 +95,9 @@ export default class FilmPresenter {
     this.#filmDetailsPopup.setWatchedClickHandler(this.#handleWatchedClick);
     this.#filmDetailsPopup.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#commentAddComponent.setCommentAddHandler(this.#handleCommentAdd);
+    this.#filmCommentsView.forEach(
+      (commentView) => commentView.setCommentDelClickHandler(this.#handleCommentDel)
+    );
   };
 
   #removeFilmDetailsPopupView = () => {
@@ -107,7 +111,10 @@ export default class FilmPresenter {
   #renderComments() {
     const commentsListContainer = this.#filmDetailsPopup.getCommentsListContainer();
     for (const comment of this.#filmComments) {
-      render(new CommentView(comment), commentsListContainer);
+      const commentView = new CommentView(comment);
+      // commentView.setCommentDelClickHandler(this.#handleCommentDel);
+      this.#filmCommentsView.set(comment.id, commentView);
+      render(commentView, commentsListContainer);
     }
   }
 
@@ -119,7 +126,21 @@ export default class FilmPresenter {
   #handleCommentAdd = (newComment) => {
     this.#updateScrollPosition();
     this.#film.comments.push(newComment.id);
-    this.#changeData(UpdateTypes.COMMENT_ADD, this.#film, newComment);
+    this.#changeData(
+      UserActions.COMMENT_ADD,
+      UpdateTypes.PATCH,
+      {...this.#film, newComment}
+    );
+  };
+
+  #handleCommentDel = (comment) => {
+    this.#updateScrollPosition();
+    this.#film.comments = this.#film.comments.filter((item) => item !== comment.id);
+    this.#changeData(
+      UserActions.COMMENT_DEL,
+      UpdateTypes.PATCH,
+      {...this.#film, comment}
+    );
   };
 
   #handleFilmClick = () => {
@@ -132,7 +153,8 @@ export default class FilmPresenter {
   #handleWatchlistClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UpdateTypes.USER_DETAILS,
+      UserActions.USER_DETAILS,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
       {...this.#film,
         userDetails:
           {
@@ -145,7 +167,8 @@ export default class FilmPresenter {
   #handleWatchedClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UpdateTypes.USER_DETAILS,
+      UserActions.USER_DETAILS,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
       {...this.#film,
         userDetails:
           {
@@ -158,7 +181,8 @@ export default class FilmPresenter {
   #handleFavoriteClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UpdateTypes.USER_DETAILS,
+      UserActions.USER_DETAILS,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
       {...this.#film,
         userDetails:
           {
