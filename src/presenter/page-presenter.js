@@ -15,10 +15,12 @@ import FilmPresenter from './film-presenter';
 import {remove, render, RenderPosition} from '../framework/render';
 import {sortFilmsByDate, sortFilmsByRate, sortFilmsByComments} from '../utils/film';
 import {filter} from '../utils/filter';
+import UserRankView from '../view/user-rank-view';
 
 const FILMS_COUNT_PER_STEP = 5;
 
 export default class FilmsPresenter {
+  #userRankView = null;
   #mainContainer = null;
   #filterModel = null;
   #filmsModel = null;
@@ -36,6 +38,7 @@ export default class FilmsPresenter {
   #filmsTopRatedPresenters = new Map();
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterTypes.ALL;
+  #siteHeaderElement = document.querySelector('.header');
 
   constructor(mainContainer, filterModel, filmsModel, commentsModel) {
     this.#mainContainer = mainContainer;
@@ -70,7 +73,7 @@ export default class FilmsPresenter {
 
   init = () => {
     this.#renderFilters();
-    this.#renderPage({renderExtraContainers: true});
+    this.#renderPage({renderExtraContainers: true, renderUserRank: true});
   };
 
   #handleShowMoreButtonClick = () => {
@@ -116,6 +119,14 @@ export default class FilmsPresenter {
 
     return presenters;
   };
+
+  #renderUserRank() {
+    const filmsWatched = filter[FilterTypes.HISTORY](this.films).length;
+    if (filmsWatched > 0) {
+      this.#userRankView = new UserRankView(filmsWatched);
+      render(this.#userRankView, this.#siteHeaderElement);
+    }
+  }
 
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer(), extraContainer) {
     const filmPresenter = new FilmPresenter(
@@ -179,12 +190,14 @@ export default class FilmsPresenter {
     }
   }
 
-  #clearFilmsList = () => {
+  #clearFilmsList = (resetRenderedFilmsCount = false) => {
     this.#filmsPresenters.forEach(
       (presenters) => presenters.destroy()
     );
     this.#filmsPresenters.clear();
-    this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
+    if (resetRenderedFilmsCount) {
+      this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
+    }
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -211,11 +224,11 @@ export default class FilmsPresenter {
         );
         break;
       case UpdateTypes.MINOR:
-        this.#clearPage();
-        this.#renderPage();
+        this.#clearPage({resetExtraContainers: true, resetUserRank: true});
+        this.#renderPage({renderExtraContainers: true, renderUserRank: true});
         break;
       case UpdateTypes.MAJOR:
-        this.#clearPage({resetSortType: true, resetExtraContainers: true});
+        this.#clearPage({resetRenderedFilmsCount: true, resetSortType: true, resetExtraContainers: true});
         this.#renderPage({renderExtraContainers: true});
         break;
     }
@@ -238,7 +251,7 @@ export default class FilmsPresenter {
     const filmsCount = films.length;
 
     this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
-    this.#clearFilmsList();
+    this.#clearFilmsList(true);
     remove(this.#sortComponent);
     this.#renderSort();
 
@@ -248,14 +261,32 @@ export default class FilmsPresenter {
     }
   };
 
-  #clearPage = ({resetSortType = false, resetExtraContainers = false} = {}) => {
+  #clearPage = (
+    {
+      resetRenderedFilmsCount = false,
+      resetSortType = false,
+      resetExtraContainers = false,
+      resetUserRank = false,
+    } = {}) => {
+    const filmsCount = this.films.length;
+
     this.#clearFilmsList();
     remove(this.#sortComponent);
     remove(this.#filmsListContainer);
     remove(this.#showMoreButtonComponent);
 
+    if (resetUserRank) {
+      remove(this.#userRankView);
+    }
+
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
+    }
+
+    if (resetRenderedFilmsCount) {
+      this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
+    } else {
+      this.#renderedFilmsCount = Math.min(filmsCount, this.#renderedFilmsCount);
     }
 
     if (this.#filmsEmptyListContainer) {
@@ -268,9 +299,13 @@ export default class FilmsPresenter {
     }
   };
 
-  #renderPage({renderExtraContainers = false} = {}) {
+  #renderPage({renderExtraContainers = false, renderUserRank = false} = {}) {
     const films = this.films;
     const filmsCount = films.length;
+
+    if (renderUserRank) {
+      this.#renderUserRank();
+    }
 
     this.#renderFilmsContainer();
     if (renderExtraContainers && this.#filmsModel.films.length > 0) {

@@ -15,7 +15,7 @@ export default class FilmPresenter {
   #film = null;
   #filmComponent = null;
   #filmDetailsPopup = null;
-  #commentAddComponent = null;
+  #commentAddComponent = new CommentAddView();
   #filmComments = [];
   #filmCommentsView = new Map();
   #changeData = null;
@@ -39,7 +39,6 @@ export default class FilmPresenter {
 
     this.#filmComponent = new FilmCardView(this.#film);
     this.#filmDetailsPopup = new FilmDetailsPopupView(this.#film);
-    this.#commentAddComponent = new CommentAddView();
 
     this.#filmComponent.setClickHandler(this.#handleFilmClick);
     this.#filmComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -126,6 +125,7 @@ export default class FilmPresenter {
   #handleCommentAdd = (newComment) => {
     this.#updateScrollPosition();
     this.#film.comments.push(newComment.id);
+    this.#commentAddComponent.reset();
     this.#changeData(
       UserActions.COMMENT_ADD,
       UpdateTypes.PATCH,
@@ -154,7 +154,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
       {...this.#film,
         userDetails:
           {
@@ -168,7 +168,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
       {...this.#film,
         userDetails:
           {
@@ -182,7 +182,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
       {...this.#film,
         userDetails:
           {
