@@ -16,6 +16,7 @@ import {remove, render, RenderPosition} from '../framework/render';
 import {sortFilmsByDate, sortFilmsByRate, sortFilmsByComments} from '../utils/film';
 import {filter} from '../utils/filter';
 import UserRankView from '../view/user-rank-view';
+import FooterStatView from '../view/footer-stat-view';
 
 const FILMS_COUNT_PER_STEP = 5;
 
@@ -39,6 +40,7 @@ export default class FilmsPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterTypes.ALL;
   #siteHeaderElement = document.querySelector('.header');
+  #siteFooterStatElement = document.querySelector('.footer__statistics');
 
   constructor(mainContainer, filterModel, filmsModel, commentsModel) {
     this.#mainContainer = mainContainer;
@@ -74,6 +76,7 @@ export default class FilmsPresenter {
   init = () => {
     this.#renderFilters();
     this.#renderPage({renderExtraContainers: true, renderUserRank: true});
+    this.#renderFooterStat(this.films.length);
   };
 
   #handleShowMoreButtonClick = () => {
@@ -126,6 +129,10 @@ export default class FilmsPresenter {
       this.#userRankView = new UserRankView(filmsWatched);
       render(this.#userRankView, this.#siteHeaderElement);
     }
+  }
+
+  #renderFooterStat(filmsCount) {
+    render(new FooterStatView(filmsCount), this.#siteFooterStatElement);
   }
 
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer(), extraContainer) {
