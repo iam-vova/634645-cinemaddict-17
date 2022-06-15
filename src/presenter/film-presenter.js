@@ -28,7 +28,7 @@ export default class FilmPresenter {
   constructor(filmsContainer, changeData, changeMode, commentsModel) {
     this.#filmsContainer = filmsContainer;
     this.#changeData = changeData;
-    this.#changeMode = changeMode
+    this.#changeMode = changeMode;
     this.#commentsModel = commentsModel;
   }
 

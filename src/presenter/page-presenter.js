@@ -215,10 +215,14 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserActions.USER_DETAILS:
-        this.#filmsModel.updateFilm(updateType, update);
+        try {
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch {
+          throw new Error('Can\'t update film');
+        }
         break;
       case UserActions.COMMENT_ADD:
         this.#commentsModel.addComment(updateType, update.newComment);

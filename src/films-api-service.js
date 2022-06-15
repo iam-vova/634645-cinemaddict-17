@@ -13,16 +13,14 @@ export default class FilmsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-  getComments = (filmId) => {
-    return this._load({url: `comments/${filmId}`})
-      .then(ApiService.parseResponse)
-  }
+  getComments = (filmId) => this._load({url: `comments/${filmId}`})
+    .then(ApiService.parseResponse);
 
-  updateFilm = async (movie) => {
+  updateFilm = async (film) => {
     const response = await this._load({
-      url: `movies/${movie.id}`,
+      url: `movies/${film.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(movie)),
+      body: JSON.stringify(this.#adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -44,18 +42,20 @@ export default class FilmsApiService extends ApiService {
         }
       },
       'user_details': {...film.userDetails,
-        'already_watched': film.user_details.isWatched,
-        'watching_date': film.user_details.watchingDate instanceof Date ? film.user_details.watchingDate.toISOString() : null
+        favorite: film.userDetails.isFavorite,
+        'already_watched': film.userDetails.isWatched,
+        'watching_date': film.userDetails.watchingDate instanceof Date ? film.userDetails.watchingDate.toISOString() : null
       }
     };
 
     delete adaptedFilm.filmInfo;
     delete adaptedFilm.userDetails;
-    delete adaptedFilm.filmInfo.ageRating;
-    delete adaptedFilm.filmInfo.alternativeTitle;
-    delete adaptedFilm.filmInfo.totalRating;
-    delete adaptedFilm.userDetails.isWatched;
-    delete adaptedFilm.userDetails.watchingDate;
+    delete adaptedFilm.film_info.ageRating;
+    delete adaptedFilm.film_info.alternativeTitle;
+    delete adaptedFilm.film_info.totalRating;
+    delete adaptedFilm.user_details.isWatched;
+    delete adaptedFilm.user_details.watchingDate;
+    delete adaptedFilm.user_details.isFavorite;
 
     return adaptedFilm;
   };
