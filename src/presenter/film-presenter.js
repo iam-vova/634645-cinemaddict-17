@@ -80,12 +80,12 @@ export default class FilmPresenter {
 
   #getFilmComments = async () => {
     this.#filmComments = await this.#commentsModel.getCommentsByFilmId(this.#film.id);
+    this.#renderComments();
   };
 
   #renderFilmDetailsPopupView = () => {
     this.#getFilmComments();
     this.#changeMode();
-    this.#renderComments();
     this.#renderCommentAddView();
     render(this.#filmDetailsPopup, this.#siteBodyElement);
     this.#addPopupHandlers();

@@ -126,7 +126,7 @@ export default class FilmsPresenter {
   };
 
   #renderUserRank() {
-    const filmsWatched = filter[FilterTypes.HISTORY](this.films).length;
+    const filmsWatched = filter[FilterTypes.HISTORY](this.#filmsModel.films).length;
     if (filmsWatched > 0) {
       this.#userRankView = new UserRankView(filmsWatched);
       render(this.#userRankView, this.#siteHeaderElement);
@@ -337,13 +337,13 @@ export default class FilmsPresenter {
       this.#renderMostCommentedContainer();
     }
 
+    if (renderUserRank) {
+      this.#renderUserRank();
+    }
+
     if (filmsCount === 0) {
       this.#renderNoFilms();
       return;
-    }
-
-    if (renderUserRank) {
-      this.#renderUserRank();
     }
 
     this.#renderSort();

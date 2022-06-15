@@ -7,9 +7,6 @@ export default class CommentsModel extends Observable {
   constructor(filmsApiService) {
     super();
     this.#filmsApiService = filmsApiService;
-    this.getCommentsByFilmId(0).then((comments) => {
-      console.log(this.#comments);
-    });
   }
 
   get comments() {

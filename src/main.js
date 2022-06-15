@@ -12,8 +12,7 @@ const siteMainElement = document.querySelector('.main');
 
 const filterModel = new FilterModel();
 const filmsModel = new FilmsModel(api);
-const comments = new CommentsModel(api);
-const commentsModel = new CommentsModel(comments);
+const commentsModel = new CommentsModel(api);
 const filmsPresenter = new PagePresenter(siteMainElement, filterModel, filmsModel, commentsModel);
 
 filmsModel.init();
