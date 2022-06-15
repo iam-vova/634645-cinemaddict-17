@@ -44,6 +44,13 @@ const UpdateTypes = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
+};
+
+const UserRank = {
+  NOVICE: 'Novice',
+  FAN: 'Fan',
+  MOVIE_BUFF: 'Movie Buff',
 };
 
 export {
@@ -55,4 +62,5 @@ export {
   SortType,
   UserActions,
   UpdateTypes,
+  UserRank,
 };

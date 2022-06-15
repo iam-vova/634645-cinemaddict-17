@@ -3,7 +3,7 @@ import he from 'he';
 import {humanizeCommentDate} from '../utils/film';
 
 const createCommentTemplate = (item) => {
-  const {author, text, date, emotion} = item || {};
+  const {author, comment, date, emotion} = item || {};
 
   return (
     `<li class="film-details__comment">
@@ -11,7 +11,7 @@ const createCommentTemplate = (item) => {
         <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
       </span>
       <div>
-        <p class="film-details__comment-text">${he.encode(text)}</p>
+        <p class="film-details__comment-text">${he.encode(comment)}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>

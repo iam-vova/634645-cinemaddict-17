@@ -15,8 +15,9 @@ export default class FilmPresenter {
   #film = null;
   #filmComponent = null;
   #filmDetailsPopup = null;
-  #commentAddComponent = null;
+  #commentAddComponent = new CommentAddView();
   #filmComments = [];
+  #commentsModel = null;
   #filmCommentsView = new Map();
   #changeData = null;
   #changeMode = null;
@@ -24,22 +25,22 @@ export default class FilmPresenter {
   #mode = Mode.DEFAULT;
   #scrollPosition = 0;
 
-  constructor(filmsContainer, changeData, changeMode) {
+  constructor(filmsContainer, changeData, changeMode, commentsModel) {
     this.#filmsContainer = filmsContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#commentsModel = commentsModel;
   }
 
-  init = (film, filmComments) => {
+  init = (film) => {
     this.#film = film;
-    this.#filmComments = filmComments;
+    this.#filmComments = this.#commentsModel.comments;
 
     const prevFilmComponent = this.#filmComponent;
     const prevFilmDetailsPopupComponent = this.#filmDetailsPopup;
 
     this.#filmComponent = new FilmCardView(this.#film);
     this.#filmDetailsPopup = new FilmDetailsPopupView(this.#film);
-    this.#commentAddComponent = new CommentAddView();
 
     this.#filmComponent.setClickHandler(this.#handleFilmClick);
     this.#filmComponent.setWatchlistClickHandler(this.#handleWatchlistClick);
@@ -77,9 +78,14 @@ export default class FilmPresenter {
     }
   };
 
-  #renderFilmDetailsPopupView = () => {
-    this.#changeMode();
+  #getFilmComments = async () => {
+    this.#filmComments = await this.#commentsModel.getCommentsByFilmId(this.#film.id);
     this.#renderComments();
+  };
+
+  #renderFilmDetailsPopupView = () => {
+    this.#getFilmComments();
+    this.#changeMode();
     this.#renderCommentAddView();
     render(this.#filmDetailsPopup, this.#siteBodyElement);
     this.#addPopupHandlers();
@@ -112,7 +118,6 @@ export default class FilmPresenter {
     const commentsListContainer = this.#filmDetailsPopup.getCommentsListContainer();
     for (const comment of this.#filmComments) {
       const commentView = new CommentView(comment);
-      // commentView.setCommentDelClickHandler(this.#handleCommentDel);
       this.#filmCommentsView.set(comment.id, commentView);
       render(commentView, commentsListContainer);
     }
@@ -126,6 +131,7 @@ export default class FilmPresenter {
   #handleCommentAdd = (newComment) => {
     this.#updateScrollPosition();
     this.#film.comments.push(newComment.id);
+    this.#commentAddComponent.reset();
     this.#changeData(
       UserActions.COMMENT_ADD,
       UpdateTypes.PATCH,
@@ -154,7 +160,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
       {...this.#film,
         userDetails:
           {
@@ -168,7 +174,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
       {...this.#film,
         userDetails:
           {
@@ -182,7 +188,7 @@ export default class FilmPresenter {
     this.#updateScrollPosition();
     this.#changeData(
       UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MAJOR,
+      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
       {...this.#film,
         userDetails:
           {

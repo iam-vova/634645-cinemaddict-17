@@ -1,12 +1,28 @@
-import {generateComments} from '../mock/comment';
 import Observable from '../framework/observable';
 
 export default class CommentsModel extends Observable {
-  #comments = generateComments();
+  #api = null;
+  #comments = [];
+
+  constructor(api) {
+    super();
+    this.#api = api;
+  }
 
   get comments() {
     return this.#comments;
   }
+
+  getCommentsByFilmId = async (filmId) => {
+    try {
+      this.#comments = await this.#api.getComments(filmId);
+    } catch {
+      this.#comments = [];
+      throw new Error('Can\'t get comments');
+    }
+
+    return this.#comments;
+  };
 
   addComment = (updateType, update) => {
     this.#comments = [

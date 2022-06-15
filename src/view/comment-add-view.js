@@ -54,6 +54,12 @@ export default class CommentAddView extends AbstractStatefulView {
     return createCommentAddTemplate(this._state);
   }
 
+  reset = () => {
+    this.updateElement(
+      CommentAddView.parseCommentToState(BLANK_COMMENT)
+    );
+  };
+
   static parseCommentToState = (comment) => ({
     ...comment,
     id: new Date().getTime(),
@@ -68,7 +74,6 @@ export default class CommentAddView extends AbstractStatefulView {
     this._callback.addComment = callback;
     document.addEventListener('keydown', this.#commentAddHandler);
   };
-
 
   #commentInputHandler = (evt) => {
     evt.preventDefault();
@@ -89,7 +94,6 @@ export default class CommentAddView extends AbstractStatefulView {
       evt.preventDefault();
       if (this._state.emotion.length > 0 && this._state.text) {
         this._callback.addComment(CommentAddView.parseStateToComment(this._state));
-        this._state = CommentAddView.parseCommentToState(BLANK_COMMENT);
       }
     }
   };
