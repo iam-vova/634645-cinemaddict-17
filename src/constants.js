@@ -44,6 +44,7 @@ const UpdateTypes = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const UserRank = {

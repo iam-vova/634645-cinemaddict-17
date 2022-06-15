@@ -17,6 +17,7 @@ import {sortFilmsByDate, sortFilmsByRate, sortFilmsByComments} from '../utils/fi
 import {filter} from '../utils/filter';
 import UserRankView from '../view/user-rank-view';
 import FooterStatView from '../view/footer-stat-view';
+import LoadingView from '../view/loading-view';
 
 const FILMS_COUNT_PER_STEP = 5;
 
@@ -26,6 +27,7 @@ export default class FilmsPresenter {
   #filterModel = null;
   #filmsModel = null;
   #commentsModel = null;
+  #loadingComponent = new LoadingView();
   #filmsContainer = new FilmsContainerView();
   #filmsListContainer = null;
   #filmsEmptyListContainer = null;
@@ -41,6 +43,7 @@ export default class FilmsPresenter {
   #filterType = FilterTypes.ALL;
   #siteHeaderElement = document.querySelector('.header');
   #siteFooterStatElement = document.querySelector('.footer__statistics');
+  #isLoading = true;
 
   constructor(mainContainer, filterModel, filmsModel, commentsModel) {
     this.#mainContainer = mainContainer;
@@ -69,14 +72,13 @@ export default class FilmsPresenter {
     return filteredFilms;
   }
 
-  get comments() {
-    return this.#commentsModel.comments;
-  }
+  // get comments() {
+  //   return this.#commentsModel.comments;
+  // }
 
   init = () => {
     this.#renderFilters();
     this.#renderPage({renderExtraContainers: true, renderUserRank: true});
-    this.#renderFooterStat(this.films.length);
   };
 
   #handleShowMoreButtonClick = () => {
@@ -92,7 +94,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #getFilmComments = (film) => this.comments.filter((item) => film.comments.includes(item.id));
+  // #getFilmComments = (film) => this.comments.filter((item) => film.comments.includes(item.id));
 
   #pushPresenter = (id, presenter, extraContainer) => {
     switch (extraContainer) {
@@ -135,13 +137,19 @@ export default class FilmsPresenter {
     render(new FooterStatView(filmsCount), this.#siteFooterStatElement);
   }
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#mainContainer);
+  };
+
+
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer(), extraContainer) {
     const filmPresenter = new FilmPresenter(
       container,
       this.#handleViewAction,
       this.#handleModeChange,
+      this.#commentsModel,
     );
-    filmPresenter.init(film, this.#getFilmComments(film));
+    filmPresenter.init(film);
     this.#pushPresenter(film.id, filmPresenter, extraContainer);
   }
 
@@ -227,7 +235,7 @@ export default class FilmsPresenter {
     switch (updateType) {
       case UpdateTypes.PATCH:
         this.#getPresenters(data.id).forEach(
-          (presenter) => presenter.init(data, this.#getFilmComments(data))
+          (presenter) => presenter.init(data)
         );
         break;
       case UpdateTypes.MINOR:
@@ -237,6 +245,12 @@ export default class FilmsPresenter {
       case UpdateTypes.MAJOR:
         this.#clearPage({resetRenderedFilmsCount: true, resetSortType: true, resetExtraContainers: true});
         this.#renderPage({renderExtraContainers: true});
+        break;
+      case UpdateTypes.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderPage({renderExtraContainers: true, renderUserRank: true});
+        this.#renderFooterStat(this.films.length);
         break;
     }
   };
@@ -279,6 +293,7 @@ export default class FilmsPresenter {
 
     this.#clearFilmsList();
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#filmsListContainer);
     remove(this.#showMoreButtonComponent);
 
@@ -310,11 +325,13 @@ export default class FilmsPresenter {
     const films = this.films;
     const filmsCount = films.length;
 
-    if (renderUserRank) {
-      this.#renderUserRank();
+    this.#renderFilmsContainer();
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
     }
 
-    this.#renderFilmsContainer();
     if (renderExtraContainers && this.#filmsModel.films.length > 0) {
       this.#renderTopRatedContainer();
       this.#renderMostCommentedContainer();
@@ -323,6 +340,10 @@ export default class FilmsPresenter {
     if (filmsCount === 0) {
       this.#renderNoFilms();
       return;
+    }
+
+    if (renderUserRank) {
+      this.#renderUserRank();
     }
 
     this.#renderSort();

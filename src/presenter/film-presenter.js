@@ -17,6 +17,7 @@ export default class FilmPresenter {
   #filmDetailsPopup = null;
   #commentAddComponent = new CommentAddView();
   #filmComments = [];
+  #commentsModel = null;
   #filmCommentsView = new Map();
   #changeData = null;
   #changeMode = null;
@@ -24,15 +25,16 @@ export default class FilmPresenter {
   #mode = Mode.DEFAULT;
   #scrollPosition = 0;
 
-  constructor(filmsContainer, changeData, changeMode) {
+  constructor(filmsContainer, changeData, changeMode, commentsModel) {
     this.#filmsContainer = filmsContainer;
     this.#changeData = changeData;
-    this.#changeMode = changeMode;
+    this.#changeMode = changeMode
+    this.#commentsModel = commentsModel;
   }
 
-  init = (film, filmComments) => {
+  init = (film) => {
     this.#film = film;
-    this.#filmComments = filmComments;
+    this.#filmComments = this.#commentsModel.comments;
 
     const prevFilmComponent = this.#filmComponent;
     const prevFilmDetailsPopupComponent = this.#filmDetailsPopup;
@@ -76,7 +78,12 @@ export default class FilmPresenter {
     }
   };
 
+  #getFilmComments = async () => {
+    this.#filmComments = await this.#commentsModel.getCommentsByFilmId(this.#film.id);
+  };
+
   #renderFilmDetailsPopupView = () => {
+    this.#getFilmComments();
     this.#changeMode();
     this.#renderComments();
     this.#renderCommentAddView();
