@@ -7,8 +7,8 @@ const Method = {
   DELETE: 'DELETE'
 };
 
-export default class FilmsApiService extends ApiService {
-  get films() {
+export default class Api extends ApiService {
+  getFilms() {
     return this._load({url: 'movies'})
       .then(ApiService.parseResponse);
   }
@@ -37,14 +37,18 @@ export default class FilmsApiService extends ApiService {
         'alternative_title': film.filmInfo.alternativeTitle,
         'total_rating': film.filmInfo.totalRating,
         release: {
-          date: film.filmInfo.release.date instanceof Date ? film.filmInfo.release.date.toISOString() : null,
+          date: film.filmInfo.release.date instanceof Date
+            ? film.filmInfo.release.date.toISOString()
+            : film.filmInfo.release.date,
           'release_country': film.filmInfo.release.releaseCountry
         }
       },
       'user_details': {...film.userDetails,
         favorite: film.userDetails.isFavorite,
         'already_watched': film.userDetails.isWatched,
-        'watching_date': film.userDetails.watchingDate instanceof Date ? film.userDetails.watchingDate.toISOString() : null
+        'watching_date': film.userDetails.watchingDate instanceof Date
+          ? film.userDetails.watchingDate.toISOString()
+          : film.filmInfo.release.date
       }
     };
 

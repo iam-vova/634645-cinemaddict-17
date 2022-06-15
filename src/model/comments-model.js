@@ -1,12 +1,12 @@
 import Observable from '../framework/observable';
 
 export default class CommentsModel extends Observable {
-  #filmsApiService = null;
+  #api = null;
   #comments = [];
 
-  constructor(filmsApiService) {
+  constructor(api) {
     super();
-    this.#filmsApiService = filmsApiService;
+    this.#api = api;
   }
 
   get comments() {
@@ -15,7 +15,7 @@ export default class CommentsModel extends Observable {
 
   getCommentsByFilmId = async (filmId) => {
     try {
-      this.#comments = await this.#filmsApiService.getComments(filmId);
+      this.#comments = await this.#api.getComments(filmId);
     } catch {
       this.#comments = [];
       throw new Error('Can\'t get comments');

@@ -118,7 +118,6 @@ export default class FilmPresenter {
     const commentsListContainer = this.#filmDetailsPopup.getCommentsListContainer();
     for (const comment of this.#filmComments) {
       const commentView = new CommentView(comment);
-      // commentView.setCommentDelClickHandler(this.#handleCommentDel);
       this.#filmCommentsView.set(comment.id, commentView);
       render(commentView, commentsListContainer);
     }

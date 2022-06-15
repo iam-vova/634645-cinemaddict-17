@@ -72,10 +72,6 @@ export default class FilmsPresenter {
     return filteredFilms;
   }
 
-  // get comments() {
-  //   return this.#commentsModel.comments;
-  // }
-
   init = () => {
     this.#renderFilters();
     this.#renderPage({renderExtraContainers: true, renderUserRank: true});
@@ -93,8 +89,6 @@ export default class FilmsPresenter {
       remove(this.#showMoreButtonComponent);
     }
   };
-
-  // #getFilmComments = (film) => this.comments.filter((item) => film.comments.includes(item.id));
 
   #pushPresenter = (id, presenter, extraContainer) => {
     switch (extraContainer) {
@@ -215,14 +209,10 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleViewAction = async (actionType, updateType, update) => {
+  #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserActions.USER_DETAILS:
-        try {
-          await this.#filmsModel.updateFilm(updateType, update);
-        } catch {
-          throw new Error('Can\'t update film');
-        }
+        this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserActions.COMMENT_ADD:
         this.#commentsModel.addComment(updateType, update.newComment);

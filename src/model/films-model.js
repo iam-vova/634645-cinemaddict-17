@@ -2,12 +2,12 @@ import Observable from '../framework/observable';
 import {UpdateTypes} from '../constants';
 
 export default class FilmsModel extends Observable {
-  #filmsApiService = null;
+  #api = null;
   #films = [];
 
-  constructor(filmsApiService) {
+  constructor(api) {
     super();
-    this.#filmsApiService = filmsApiService;
+    this.#api = api;
   }
 
   get films() {
@@ -16,7 +16,7 @@ export default class FilmsModel extends Observable {
 
   init = async () => {
     try {
-      const films = await this.#filmsApiService.films;
+      const films = await this.#api.getFilms();
       this.#films = films.map(this.#adaptToClient);
     } catch(err) {
       this.#films = [];
@@ -33,7 +33,7 @@ export default class FilmsModel extends Observable {
     }
 
     try {
-      const response = await this.#filmsApiService.updateFilm(update);
+      const response = await this.#api.updateFilm(update);
       const updatedFilm = this.#adaptToClient(response);
       this.#films = [
         ...this.#films.slice(0, index),
