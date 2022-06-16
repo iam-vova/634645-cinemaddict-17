@@ -216,6 +216,7 @@ export default class FilmPresenter {
       this.#film,
       comment,
     );
+    this.#filmCommentsView.delete(comment.id);
   };
 
   #handleFilmClick = () => {
@@ -273,6 +274,7 @@ export default class FilmPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#commentAddComponent.reset();
       this.#removeFilmDetailsPopupView();
     }
   };

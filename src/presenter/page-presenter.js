@@ -141,7 +141,6 @@ export default class FilmsPresenter {
     render(this.#loadingComponent, this.#mainContainer);
   };
 
-
   #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer(), extraContainer) {
     const filmPresenter = new FilmPresenter(
       container,
@@ -189,19 +188,24 @@ export default class FilmsPresenter {
 
   #renderTopRatedContainer() {
     const topRatedFilms = [...this.#filmsModel.films].sort(sortFilmsByRate).slice(0, 2);
-    this.#filmsTopRatedContainer = new FilmsListContainerView(FilmsContainerTitles.TOP_RATED, true);
-    render(this.#filmsTopRatedContainer, this.#filmsContainer.element, RenderPosition.BEFOREEND);
-    for (const film of topRatedFilms) {
-      this.#renderFilm(film, this.#filmsTopRatedContainer.getFilmsContainer(), FilmsContainerTitles.TOP_RATED);
+    if (topRatedFilms[0].filmInfo.totalRating > 0) {
+      this.#filmsTopRatedContainer = new FilmsListContainerView(FilmsContainerTitles.TOP_RATED, true);
+      render(this.#filmsTopRatedContainer, this.#filmsContainer.element, RenderPosition.BEFOREEND);
+      for (const film of topRatedFilms) {
+        this.#renderFilm(film, this.#filmsTopRatedContainer.getFilmsContainer(), FilmsContainerTitles.TOP_RATED);
+      }
     }
   }
 
   #renderMostCommentedContainer() {
     const mostCommentedFilms = [...this.#filmsModel.films].sort(sortFilmsByComments).slice(0, 2);
-    this.#filmsMostCommentedContainer = new FilmsListContainerView(FilmsContainerTitles.MOST_COMMENTED, true);
-    render(this.#filmsMostCommentedContainer, this.#filmsContainer.element, RenderPosition.BEFOREEND);
-    for (const film of mostCommentedFilms) {
-      this.#renderFilm(film, this.#filmsMostCommentedContainer.getFilmsContainer(), FilmsContainerTitles.MOST_COMMENTED);
+
+    if (mostCommentedFilms[0].comments.length > 0) {
+      this.#filmsMostCommentedContainer = new FilmsListContainerView(FilmsContainerTitles.MOST_COMMENTED, true);
+      render(this.#filmsMostCommentedContainer, this.#filmsContainer.element, RenderPosition.BEFOREEND);
+      for (const film of mostCommentedFilms) {
+        this.#renderFilm(film, this.#filmsMostCommentedContainer.getFilmsContainer(), FilmsContainerTitles.MOST_COMMENTED);
+      }
     }
   }
 
