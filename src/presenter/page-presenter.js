@@ -220,29 +220,29 @@ export default class FilmsPresenter {
 
     switch (actionType) {
       case UserActions.USER_DETAILS:
-        this.#filmsPresenters.get(update.id).setUpdating();
+        this.#getPresenters(update.id).forEach((presenter) => presenter.setUpdating());
         try {
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
-          this.#filmsPresenters.get(update.id).setAborting();
+          this.#getPresenters(update.id).forEach((presenter) => presenter.setAborting());
         }
         break;
       case UserActions.COMMENT_ADD:
-        this.#filmsPresenters.get(update.id).setCommentAdding();
+        this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentAdding());
         try {
           await this.#commentsModel.addComment(updateType, comment, update.id);
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
-          this.#filmsPresenters.get(update.id).setCommentAddAborting();
+          this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentAddAborting());
         }
         break;
       case UserActions.COMMENT_DEL:
-        this.#filmsPresenters.get(update.id).setCommentDeleting(comment);
+        this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentDeleting(comment));
         try {
           await this.#commentsModel.deleteComment(updateType, comment);
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
-          this.#filmsPresenters.get(update.id).setCommentDelAborting(comment);
+          this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentDelAborting(comment));
         }
         break;
     }
