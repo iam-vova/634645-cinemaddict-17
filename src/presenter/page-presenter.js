@@ -18,8 +18,13 @@ import {filter} from '../utils/filter';
 import UserRankView from '../view/user-rank-view';
 import FooterStatView from '../view/footer-stat-view';
 import LoadingView from '../view/loading-view';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const FILMS_COUNT_PER_STEP = 5;
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class FilmsPresenter {
   #userRankView = null;
@@ -44,6 +49,7 @@ export default class FilmsPresenter {
   #siteHeaderElement = document.querySelector('.header');
   #siteFooterStatElement = document.querySelector('.footer__statistics');
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(mainContainer, filterModel, filmsModel, commentsModel) {
     this.#mainContainer = mainContainer;
@@ -209,20 +215,39 @@ export default class FilmsPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update, comment) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserActions.USER_DETAILS:
-        this.#filmsModel.updateFilm(updateType, update);
+        this.#filmsPresenters.get(update.id).setUpdating();
+        try {
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch(err) {
+          this.#filmsPresenters.get(update.id).setAborting();
+        }
         break;
       case UserActions.COMMENT_ADD:
-        this.#commentsModel.addComment(updateType, update.newComment);
-        this.#filmsModel.updateFilm(updateType, update);
+        this.#filmsPresenters.get(update.id).setCommentAdding();
+        try {
+          await this.#commentsModel.addComment(updateType, comment, update.id);
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch(err) {
+          this.#filmsPresenters.get(update.id).setCommentAddAborting();
+        }
         break;
       case UserActions.COMMENT_DEL:
-        this.#commentsModel.deleteComment(updateType, update);
-        this.#filmsModel.updateFilm(updateType, update);
+        this.#filmsPresenters.get(update.id).setCommentDeleting(comment);
+        try {
+          await this.#commentsModel.deleteComment(updateType, comment);
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch(err) {
+          this.#filmsPresenters.get(update.id).setCommentDelAborting(comment);
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {

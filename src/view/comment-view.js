@@ -1,9 +1,9 @@
-import AbstractView from '../framework/view/abstract-view';
 import he from 'he';
 import {humanizeCommentDate} from '../utils/film';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
-const createCommentTemplate = (item) => {
-  const {author, comment, date, emotion} = item || {};
+const createCommentTemplate = (data) => {
+  const {author, comment, date, emotion, isDisabled} = data || {};
 
   return (
     `<li class="film-details__comment">
@@ -15,33 +15,47 @@ const createCommentTemplate = (item) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button ${isDisabled ? 'disabled' : ''} class="film-details__comment-delete">${isDisabled ? 'Deleting...' : 'Delete'}</button>
         </p>
       </div>
     </li>`
   );
 };
 
-export default class CommentView extends AbstractView {
-  #comment = null;
-
+export default class CommentView extends AbstractStatefulView {
   constructor(comment) {
     super();
-    this.#comment = comment;
+    this._state = CommentView.parseCommentToState(comment);
   }
 
   get template() {
-    return createCommentTemplate(this.#comment);
+    return createCommentTemplate(this._state);
   }
+
+  static parseCommentToState = (comment) => ({
+    ...comment,
+    isDisabled: false,
+  });
+
+  static parseStateToComment = (state) => {
+    const comment = {...state};
+    delete comment.isDisabled;
+
+    return comment;
+  };
 
   #commentDelHandler = (evt) => {
     evt.preventDefault();
-    this._callback.commentDel(this.#comment);
+    this._callback.commentDel(CommentView.parseStateToComment(this._state));
   };
 
   setCommentDelClickHandler = (callback) => {
     this._callback.commentDel = callback;
     this.element.querySelector('.film-details__comment-delete')
       .addEventListener('click', this.#commentDelHandler);
+  };
+
+  _restoreHandlers = () => {
+    this.setCommentDelClickHandler(this._callback.commentDel);
   };
 }

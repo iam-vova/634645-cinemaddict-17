@@ -78,21 +78,17 @@ export default class FilmPresenter {
     }
   };
 
-  #getFilmComments = async () => {
+  #renderFilmDetailsPopupView = async () => {
     this.#filmComments = await this.#commentsModel.getCommentsByFilmId(this.#film.id);
     this.#renderComments();
-  };
-
-  #renderFilmDetailsPopupView = () => {
-    this.#getFilmComments();
     this.#changeMode();
     this.#renderCommentAddView();
-    render(this.#filmDetailsPopup, this.#siteBodyElement);
-    this.#addPopupHandlers();
     this.#siteBodyElement.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#mode = Mode.DETAILS;
     this.#filmDetailsPopup.element.scrollTop = this.#scrollPosition;
+    render(this.#filmDetailsPopup, this.#siteBodyElement);
+    this.#addPopupHandlers();
   };
 
   #addPopupHandlers = () => {
@@ -128,24 +124,97 @@ export default class FilmPresenter {
     render (this.#commentAddComponent, commentsContainer);
   }
 
-  #handleCommentAdd = (newComment) => {
+  setUpdating = () => {
+    if (this.#mode === Mode.DETAILS) {
+      this.#filmDetailsPopup.updateElement({
+        isDisabled: true,
+      });
+    }
+
+    if (this.#mode === Mode.DEFAULT) {
+      this.#filmComponent.updateElement({
+        isDisabled: true,
+      });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === Mode.DETAILS) {
+      const resetFormState = () => {
+        this.#filmDetailsPopup.updateElement({
+          isDisabled: false,
+        });
+      };
+
+      this.#filmDetailsPopup.shake(resetFormState);
+    }
+
+    if (this.#mode === Mode.DEFAULT) {
+      const resetFormState = () => {
+        this.#filmComponent.updateElement({
+          isDisabled: false,
+        });
+      };
+
+      this.#filmComponent.shake(resetFormState);
+    }
+  };
+
+  setCommentDeleting = (comment) => {
+    if (this.#mode === Mode.DETAILS) {
+      this.#filmCommentsView.get(comment.id).updateElement({
+        isDisabled: true,
+      });
+    }
+  };
+
+  setCommentDelAborting = (comment) => {
+    const component = this.#filmCommentsView.get(comment.id);
+    const resetFormState = () => {
+      component.updateElement({
+        isDisabled: false,
+      });
+    };
+
+    component.shake(resetFormState);
+  };
+
+  setCommentAdding = () => {
+    if (this.#mode === Mode.DETAILS) {
+      this.#commentAddComponent.updateElement({
+        isDisabled: true,
+      });
+    }
+  };
+
+  setCommentAddAborting = () => {
+    const resetFormState = () => {
+      this.#commentAddComponent.updateElement({
+        isDisabled: false,
+      });
+    };
+
+    this.#commentAddComponent.shake(resetFormState);
+  };
+
+  #handleCommentAdd = (comment) => {
     this.#updateScrollPosition();
-    this.#film.comments.push(newComment.id);
-    this.#commentAddComponent.reset();
     this.#changeData(
       UserActions.COMMENT_ADD,
       UpdateTypes.PATCH,
-      {...this.#film, newComment}
+      this.#film,
+      comment
     );
+    this.#commentAddComponent.reset();
   };
 
   #handleCommentDel = (comment) => {
     this.#updateScrollPosition();
-    this.#film.comments = this.#film.comments.filter((item) => item !== comment.id);
     this.#changeData(
       UserActions.COMMENT_DEL,
       UpdateTypes.PATCH,
-      {...this.#film, comment}
+      this.#film,
+      comment,
     );
   };
 
