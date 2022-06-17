@@ -206,11 +206,7 @@ export default class FilmDetailsPopupView extends AbstractStatefulView {
     this.setFavoriteClickHandler(this._callback.favoriteClick);
   };
 
-  getCommentsContainer() {
-    return this.element.querySelector('.film-details__comments-wrap');
-  }
+  getCommentsContainer = () => this.element.querySelector('.film-details__comments-wrap');
 
-  getCommentsListContainer() {
-    return this.element.querySelector('.film-details__comments-list');
-  }
+  getCommentsListContainer = () => this.element.querySelector('.film-details__comments-list');
 }

@@ -125,23 +125,23 @@ export default class FilmsPresenter {
     return presenters;
   };
 
-  #renderUserRank() {
+  #renderUserRank = () => {
     const filmsWatched = filter[FilterType.HISTORY](this.#filmsModel.films).length;
     if (filmsWatched > 0) {
       this.#userRankView = new UserRankView(filmsWatched);
       render(this.#userRankView, this.#siteHeaderElement);
     }
-  }
+  };
 
-  #renderFooterStat(filmsCount) {
+  #renderFooterStat = (filmsCount) => {
     render(new FooterStatView(filmsCount), this.#siteFooterStatElement);
-  }
+  };
 
   #renderLoading = () => {
     render(this.#loadingComponent, this.#mainContainer);
   };
 
-  #renderFilm(film, container = this.#filmsListContainer.getFilmsContainer(), extraContainer) {
+  #renderFilm = (film, container = this.#filmsListContainer.getFilmsContainer(), extraContainer) => {
     const filmPresenter = new FilmPresenter(
       container,
       this.#handleViewAction,
@@ -150,43 +150,43 @@ export default class FilmsPresenter {
     );
     filmPresenter.init(film);
     this.#pushPresenter(film.id, filmPresenter, extraContainer);
-  }
+  };
 
-  #renderFilters() {
+  #renderFilters = () => {
     const filterPresenter = new FilterPresenter(this.#mainContainer, this.#filterModel, this.#filmsModel);
     filterPresenter.init();
-  }
+  };
 
-  #renderFilmsContainer() {
+  #renderFilmsContainer = () => {
     render(this.#filmsContainer, this.#mainContainer);
-  }
+  };
 
-  #renderSort() {
+  #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     render(this.#sortComponent, this.#filmsContainer.element, RenderPosition.BEFOREBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-  }
+  };
 
-  #renderShowMoreButton() {
+  #renderShowMoreButton = () => {
     render(this.#showMoreButtonComponent, this.#filmsListContainer.element);
     this.#showMoreButtonComponent.setClickHandler(this.#handleShowMoreButtonClick);
-  }
+  };
 
-  #renderFilmsListContainer() {
+  #renderFilmsListContainer = () => {
     this.#filmsListContainer = new FilmsListContainerView(FilmContainerTitle.ALL_MOVIES);
     render(this.#filmsListContainer, this.#filmsContainer.element, RenderPosition.AFTERBEGIN);
-  }
+  };
 
-  #renderFilmsList(films) {
+  #renderFilmsList = (films) => {
     films.forEach((film) => this.#renderFilm(film));
-  }
+  };
 
-  #renderNoFilms() {
+  #renderNoFilms = () => {
     this.#filmsEmptyListContainer = new FilmsListContainerView(FilmEmptyContainerTitle[this.#filterType], false, true);
     render(this.#filmsEmptyListContainer, this.#filmsContainer.element, RenderPosition.AFTERBEGIN);
-  }
+  };
 
-  #renderTopRatedContainer() {
+  #renderTopRatedContainer = () => {
     const topRatedFilms = [...this.#filmsModel.films].sort(sortFilmsByRate).slice(0, 2);
     if (topRatedFilms[0].filmInfo.totalRating > 0) {
       this.#filmsTopRatedContainer = new FilmsListContainerView(FilmContainerTitle.TOP_RATED, true);
@@ -195,9 +195,9 @@ export default class FilmsPresenter {
         this.#renderFilm(film, this.#filmsTopRatedContainer.getFilmsContainer(), FilmContainerTitle.TOP_RATED);
       }
     }
-  }
+  };
 
-  #renderMostCommentedContainer() {
+  #renderMostCommentedContainer = () => {
     const mostCommentedFilms = [...this.#filmsModel.films].sort(sortFilmsByComments).slice(0, 2);
 
     if (mostCommentedFilms[0].comments.length > 0) {
@@ -207,7 +207,7 @@ export default class FilmsPresenter {
         this.#renderFilm(film, this.#filmsMostCommentedContainer.getFilmsContainer(), FilmContainerTitle.MOST_COMMENTED);
       }
     }
-  }
+  };
 
   #clearFilmsList = (resetRenderedFilmsCount = false) => {
     this.#filmsPresenters.forEach(
@@ -344,7 +344,7 @@ export default class FilmsPresenter {
     }
   };
 
-  #renderPage({renderExtraContainers = false, renderUserRank = false} = {}) {
+  #renderPage = ({renderExtraContainers = false, renderUserRank = false} = {}) => {
     const films = this.films;
     const filmsCount = films.length;
 
@@ -377,5 +377,5 @@ export default class FilmsPresenter {
     if (filmsCount > this.#renderedFilmsCount) {
       this.#renderShowMoreButton();
     }
-  }
+  };
 }

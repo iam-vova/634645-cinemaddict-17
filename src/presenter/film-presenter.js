@@ -110,19 +110,19 @@ export default class FilmPresenter {
     this.#mode = Mode.DEFAULT;
   };
 
-  #renderComments() {
+  #renderComments = () => {
     const commentsListContainer = this.#filmDetailsPopup.getCommentsListContainer();
     for (const comment of this.#filmComments) {
       const commentView = new CommentView(comment);
       this.#filmCommentsView.set(comment.id, commentView);
       render(commentView, commentsListContainer);
     }
-  }
+  };
 
-  #renderCommentAddView() {
+  #renderCommentAddView = () => {
     const commentsContainer = this.#filmDetailsPopup.getCommentsContainer();
     render (this.#commentAddComponent, commentsContainer);
-  }
+  };
 
   setUpdating = () => {
     if (this.#mode === Mode.DETAILS) {

@@ -8,10 +8,8 @@ const Method = {
 };
 
 export default class Api extends ApiService {
-  getFilms() {
-    return this._load({url: 'movies'})
-      .then(ApiService.parseResponse);
-  }
+  getFilms = () => this._load({url: 'movies'})
+    .then(ApiService.parseResponse);
 
   getComments = (filmId) => this._load({url: `comments/${filmId}`})
     .then(ApiService.parseResponse);
