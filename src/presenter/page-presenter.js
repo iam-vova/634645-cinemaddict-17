@@ -235,6 +235,7 @@ export default class FilmsPresenter {
         this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentAdding());
         try {
           await this.#commentsModel.addComment(updateType, comment, update.id);
+          await new Promise((resolve) => setTimeout(resolve, 100));
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
           this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentAddAborting());
@@ -244,6 +245,7 @@ export default class FilmsPresenter {
         this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentDeleting(comment));
         try {
           await this.#commentsModel.deleteComment(updateType, comment);
+          await new Promise((resolve) => setTimeout(resolve, 100));
           await this.#filmsModel.updateFilm(updateType, update);
         } catch(err) {
           this.#getPresenters(update.id).forEach((presenter) => presenter.setCommentDelAborting(comment));
