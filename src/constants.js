@@ -5,26 +5,24 @@ const emojiNames = [
   'angry'
 ];
 
-const commentsCount = 3;
-
-const FilmsContainerTitles = {
+const FilmContainerTitle = {
   ALL_MOVIES: 'All movies. Upcoming',
   TOP_RATED: 'Top rated',
   MOST_COMMENTED: 'Most commented',
 };
 
-const FilterTypes = {
+const FilterType = {
   ALL: 'All movies',
   WATCHLIST: 'Watchlist',
   HISTORY: 'History',
   FAVORITES: 'Favorites',
 };
 
-const FilmsEmptyContainerTitles = {
-  [FilterTypes.ALL]: 'There are no movies in our database',
-  [FilterTypes.WATCHLIST]: 'There are no movies to watch now',
-  [FilterTypes.HISTORY]: 'There are no watched movies now',
-  [FilterTypes.FAVORITES]: 'There are no favorite movies now',
+const FilmEmptyContainerTitle = {
+  [FilterType.ALL]: 'There are no movies in our database',
+  [FilterType.WATCHLIST]: 'There are no movies to watch now',
+  [FilterType.HISTORY]: 'There are no watched movies now',
+  [FilterType.FAVORITES]: 'There are no favorite movies now',
 };
 
 const SortType = {
@@ -34,13 +32,13 @@ const SortType = {
   COMMENTS: 'comments',
 };
 
-const UserActions = {
+const UserAction = {
   USER_DETAILS: 'userDetails',
   COMMENT_ADD: 'commentAdd',
   COMMENT_DEL: 'commentDel',
 };
 
-const UpdateTypes = {
+const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
@@ -55,12 +53,11 @@ const UserRank = {
 
 export {
   emojiNames,
-  commentsCount,
-  FilmsContainerTitles,
-  FilmsEmptyContainerTitles,
-  FilterTypes,
+  FilmContainerTitle,
+  FilmEmptyContainerTitle,
+  FilterType,
   SortType,
-  UserActions,
-  UpdateTypes,
+  UserAction,
+  UpdateType,
   UserRank,
 };

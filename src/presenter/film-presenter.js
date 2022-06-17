@@ -3,7 +3,7 @@ import FilmDetailsPopupView from '../view/film-details-popup-view';
 import FilmCardView from '../view/film-card-view';
 import CommentView from '../view/comment-view';
 import CommentAddView from '../view/comment-add-view';
-import {UserActions, UpdateTypes} from '../constants';
+import {UserAction, UpdateType} from '../constants';
 
 const Mode = {
   DEFAULT: 'default',
@@ -200,8 +200,8 @@ export default class FilmPresenter {
   #handleCommentAdd = (comment) => {
     this.#updateScrollPosition();
     this.#changeData(
-      UserActions.COMMENT_ADD,
-      UpdateTypes.PATCH,
+      UserAction.COMMENT_ADD,
+      UpdateType.PATCH,
       this.#film,
       comment
     );
@@ -211,8 +211,8 @@ export default class FilmPresenter {
   #handleCommentDel = (comment) => {
     this.#updateScrollPosition();
     this.#changeData(
-      UserActions.COMMENT_DEL,
-      UpdateTypes.PATCH,
+      UserAction.COMMENT_DEL,
+      UpdateType.PATCH,
       this.#film,
       comment,
     );
@@ -229,8 +229,8 @@ export default class FilmPresenter {
   #handleWatchlistClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
+      UserAction.USER_DETAILS,
+      this.#mode === Mode.DETAILS ? UpdateType.PATCH : UpdateType.MINOR,
       {...this.#film,
         userDetails:
           {
@@ -243,8 +243,8 @@ export default class FilmPresenter {
   #handleWatchedClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
+      UserAction.USER_DETAILS,
+      this.#mode === Mode.DETAILS ? UpdateType.PATCH : UpdateType.MINOR,
       {...this.#film,
         userDetails:
           {
@@ -257,8 +257,8 @@ export default class FilmPresenter {
   #handleFavoriteClick = () => {
     this.#updateScrollPosition();
     this.#changeData(
-      UserActions.USER_DETAILS,
-      this.#mode === Mode.DETAILS ? UpdateTypes.PATCH : UpdateTypes.MINOR,
+      UserAction.USER_DETAILS,
+      this.#mode === Mode.DETAILS ? UpdateType.PATCH : UpdateType.MINOR,
       {...this.#film,
         userDetails:
           {

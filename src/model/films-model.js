@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import {UpdateTypes} from '../constants';
+import {UpdateType} from '../constants';
 
 export default class FilmsModel extends Observable {
   #api = null;
@@ -22,7 +22,7 @@ export default class FilmsModel extends Observable {
       this.#films = [];
     }
 
-    this._notify(UpdateTypes.INIT);
+    this._notify(UpdateType.INIT);
   };
 
   updateFilm = async (updateType, update) => {

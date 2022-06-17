@@ -1,7 +1,7 @@
 import {render, replace, remove} from '../framework/render';
 import FilterView from '../view/filter-view';
 import {filter} from '../utils/filter.js';
-import {FilterTypes, UpdateTypes} from '../constants';
+import {FilterType, UpdateType} from '../constants';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -24,20 +24,20 @@ export default class FilterPresenter {
 
     return [
       {
-        name: FilterTypes.ALL,
-        count: filter[FilterTypes.ALL](films).length,
+        name: FilterType.ALL,
+        count: filter[FilterType.ALL](films).length,
       },
       {
-        name: FilterTypes.WATCHLIST,
-        count: filter[FilterTypes.WATCHLIST](films).length,
+        name: FilterType.WATCHLIST,
+        count: filter[FilterType.WATCHLIST](films).length,
       },
       {
-        name: FilterTypes.HISTORY,
-        count: filter[FilterTypes.HISTORY](films).length,
+        name: FilterType.HISTORY,
+        count: filter[FilterType.HISTORY](films).length,
       },
       {
-        name: FilterTypes.FAVORITES,
-        count: filter[FilterTypes.FAVORITES](films).length,
+        name: FilterType.FAVORITES,
+        count: filter[FilterType.FAVORITES](films).length,
       },
     ];
   }
@@ -67,6 +67,6 @@ export default class FilterPresenter {
       return;
     }
 
-    this.#filterModel.setFilter(UpdateTypes.MAJOR, filterType);
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };
 }
