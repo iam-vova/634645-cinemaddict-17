@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view';
 import {getTimeFromMins, humanizeFilmDate} from '../utils/film';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 const createFilmDetailsPopupTemplate = (film) => {
   const commentsCount = film.comments.length;
@@ -15,7 +15,8 @@ const createFilmDetailsPopupTemplate = (film) => {
     release,
     runtime,
     genre,
-    description
+    description,
+    isDisabled,
   } = film.filmInfo;
   const {watchlist, isWatched, isFavorite} = film.userDetails;
 
@@ -89,9 +90,33 @@ const createFilmDetailsPopupTemplate = (film) => {
           </div>
 
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${getControlBtnClassName(watchlist)}" id="watchlist" name="watchlist">Add to watchlist</button>
-            <button type="button" class="film-details__control-button film-details__control-button--watched ${getControlBtnClassName(isWatched)}" id="watched" name="watched">Already watched</button>
-            <button type="button" class="film-details__control-button film-details__control-button--favorite ${getControlBtnClassName(isFavorite)}" id="favorite" name="favorite">Add to favorites</button>
+            <button
+              ${isDisabled ? 'disabled' : ''}
+              type="button"
+              class="film-details__control-button film-details__control-button--watchlist ${getControlBtnClassName(watchlist)}"
+              id="watchlist"
+              name="watchlist"
+            >
+                Add to watchlist
+            </button>
+            <button
+              ${isDisabled ? 'disabled' : ''}
+              type="button"
+              class="film-details__control-button film-details__control-button--watched ${getControlBtnClassName(isWatched)}"
+              id="watched"
+              name="watched"
+            >
+                Already watched
+            </button>
+            <button
+              ${isDisabled ? 'disabled' : ''}
+              type="button"
+              class="film-details__control-button film-details__control-button--favorite ${getControlBtnClassName(isFavorite)}"
+              id="favorite"
+              name="favorite"
+            >
+                Add to favorites
+            </button>
           </section>
         </div>
 
@@ -109,17 +134,27 @@ const createFilmDetailsPopupTemplate = (film) => {
   );
 };
 
-export default class FilmDetailsPopupView extends AbstractView {
-  #film = null;
-
+export default class FilmDetailsPopupView extends AbstractStatefulView {
   constructor(film) {
     super();
-    this.#film = film;
+    this._state = FilmDetailsPopupView.parseFilmToState(film);
   }
 
   get template() {
-    return createFilmDetailsPopupTemplate(this.#film);
+    return createFilmDetailsPopupTemplate(this._state);
   }
+
+  static parseFilmToState = (film) => ({
+    ...film,
+    isDisabled: false,
+  });
+
+  static parseStateToFilm = (state) => {
+    const film = {...state};
+    delete film.isDisabled;
+
+    return film;
+  };
 
   setCloseClickHandler = (callback) => {
     this._callback.click = callback;
@@ -146,29 +181,32 @@ export default class FilmDetailsPopupView extends AbstractView {
 
   #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.click(FilmDetailsPopupView.parseStateToFilm(this._state));
   };
 
   #watchlistClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.watchlistClick();
+    this._callback.watchlistClick(FilmDetailsPopupView.parseStateToFilm(this._state));
   };
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.watchedClick();
+    this._callback.watchedClick(FilmDetailsPopupView.parseStateToFilm(this._state));
   };
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this._callback.favoriteClick(FilmDetailsPopupView.parseStateToFilm(this._state));
   };
 
-  getCommentsContainer() {
-    return this.element.querySelector('.film-details__comments-wrap');
-  }
+  _restoreHandlers = () => {
+    this.setCloseClickHandler(this._callback.click);
+    this.setWatchlistClickHandler(this._callback.watchlistClick);
+    this.setWatchedClickHandler(this._callback.watchedClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+  };
 
-  getCommentsListContainer() {
-    return this.element.querySelector('.film-details__comments-list');
-  }
+  getCommentsContainer = () => this.element.querySelector('.film-details__comments-wrap');
+
+  getCommentsListContainer = () => this.element.querySelector('.film-details__comments-list');
 }

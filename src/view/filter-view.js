@@ -1,9 +1,9 @@
 import AbstractView from '../framework/view/abstract-view';
-import {FilterTypes} from '../constants';
+import {FilterType} from '../constants';
 
 const createFilterMarkup = (filter, currentFilterType) => {
   const {name, count} = filter;
-  const filterLink = Object.keys(FilterTypes).find((item) => FilterTypes[item] === name).toLowerCase();
+  const filterLink = Object.keys(FilterType).find((item) => FilterType[item] === name).toLowerCase();
 
   return (
     `<a
@@ -12,7 +12,7 @@ const createFilterMarkup = (filter, currentFilterType) => {
       data-filter-name="${name}"
     >
       ${name}
-      ${name === FilterTypes.ALL ? '' : `<span class="main-navigation__item-count">${count}</span>`}
+      ${name === FilterType.ALL ? '' : `<span class="main-navigation__item-count">${count}</span>`}
     </a>`
   );
 };

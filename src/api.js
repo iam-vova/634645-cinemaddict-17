@@ -8,10 +8,8 @@ const Method = {
 };
 
 export default class Api extends ApiService {
-  getFilms() {
-    return this._load({url: 'movies'})
-      .then(ApiService.parseResponse);
-  }
+  getFilms = () => this._load({url: 'movies'})
+    .then(ApiService.parseResponse);
 
   getComments = (filmId) => this._load({url: `comments/${filmId}`})
     .then(ApiService.parseResponse);
@@ -27,6 +25,28 @@ export default class Api extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  };
+
+  addComment = async (comment, filmId) => {
+    const response = await this._load({
+      url: `comments/${filmId}`,
+      method: Method.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  deleteComment = async (commentId) => {
+    const response = await this._load({
+      url: `comments/${commentId}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   };
 
   #adaptToServer = (film) => {

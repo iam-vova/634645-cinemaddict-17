@@ -2,8 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import {emojiNames} from '../constants';
 import he from 'he';
 
-const createCommentAddTemplate = (comment) => {
-  const {emotion, text} = comment;
+const createCommentAddTemplate = (data) => {
+  const {emotion, comment, isDisabled} = data;
 
   return (
     `<div class="film-details__new-comment">
@@ -15,7 +15,8 @@ const createCommentAddTemplate = (comment) => {
           class="film-details__comment-input"
           placeholder="Select reaction below and write comment here"
           name="comment"
-          >${he.encode(text)}</textarea>
+          ${isDisabled ? 'disabled' : ''}
+          >${he.encode(comment)}</textarea>
       </label>
       <div class="film-details__emoji-list">
         ${emojiNames.map((item) => (
@@ -25,6 +26,7 @@ const createCommentAddTemplate = (comment) => {
         type="radio"
         id="emoji-${item}"
         value="${item}"
+        ${isDisabled ? 'disabled' : ''}
         ${emotion.toString() === item ? 'checked' : ''}
       >
         <label class="film-details__emoji-label" for="emoji-${item}">
@@ -36,11 +38,8 @@ const createCommentAddTemplate = (comment) => {
 };
 
 const BLANK_COMMENT = {
-  id: new Date().getTime(),
-  author: 'Random name',
-  date: new Date(),
-  emotion: new Array(),
-  text: '',
+  emotion: '',
+  comment: '',
 };
 
 export default class CommentAddView extends AbstractStatefulView {
@@ -62,11 +61,13 @@ export default class CommentAddView extends AbstractStatefulView {
 
   static parseCommentToState = (comment) => ({
     ...comment,
-    id: new Date().getTime(),
+    isDisabled: false,
   });
 
   static parseStateToComment = (state) => {
     const comment = {...state};
+    delete comment.isDisabled;
+
     return comment;
   };
 
@@ -78,21 +79,21 @@ export default class CommentAddView extends AbstractStatefulView {
   #commentInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      text: evt.target.value,
+      comment: evt.target.value,
     });
   };
 
   #emojiClickHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
-      emotion: [evt.target.value],
+      emotion: evt.target.value,
     });
   };
 
   #commentAddHandler = (evt) => {
     if ((evt.ctrlKey || evt.metaKey) && (evt.key === 'Enter')) {
       evt.preventDefault();
-      if (this._state.emotion.length > 0 && this._state.text) {
+      if (this._state.emotion.length > 0 && this._state.comment) {
         this._callback.addComment(CommentAddView.parseStateToComment(this._state));
       }
     }

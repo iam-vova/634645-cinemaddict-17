@@ -1,4 +1,4 @@
-import {FilterTypes} from '../constants';
+import {FilterType} from '../constants';
 
 const getWatchlistFilms = (films) => films.filter((film) => film.userDetails.watchlist);
 
@@ -7,10 +7,10 @@ const getWatchedFilms = (films) => films.filter((film) => film.userDetails.isWat
 const getFavoritesFilms = (films) => films.filter((film) => film.userDetails.isFavorite);
 
 const filter = {
-  [FilterTypes.ALL]: (films) => films,
-  [FilterTypes.WATCHLIST]: (films) => getWatchlistFilms(films),
-  [FilterTypes.HISTORY]: (films) => getWatchedFilms(films),
-  [FilterTypes.FAVORITES]: (films) => getFavoritesFilms(films),
+  [FilterType.ALL]: (films) => films,
+  [FilterType.WATCHLIST]: (films) => getWatchlistFilms(films),
+  [FilterType.HISTORY]: (films) => getWatchedFilms(films),
+  [FilterType.FAVORITES]: (films) => getFavoritesFilms(films),
 };
 
 export {filter};
