@@ -26,7 +26,7 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
-export default class FilmsPresenter {
+export default class PagePresenter {
   #userRankView = null;
   #mainContainer = null;
   #filterModel = null;

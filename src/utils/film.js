@@ -2,9 +2,11 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
+const MINUTES_IN_HOUR = 60;
+
 const getTimeFromMins = (mins) => {
-  const hours = Math.trunc(mins / 60);
-  const minutes = mins % 60;
+  const hours = Math.trunc(mins / MINUTES_IN_HOUR);
+  const minutes = mins % MINUTES_IN_HOUR;
   return hours === 0 ? `${minutes} m` : `${hours}h ${minutes}m`;
 };
 

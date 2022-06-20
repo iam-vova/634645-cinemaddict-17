@@ -1,12 +1,18 @@
 import AbstractView from '../framework/view/abstract-view';
 import {UserRank} from '../constants';
 
+const UserRankMap = {
+  [UserRank.NOVICE]: [0, 10],
+  [UserRank.FAN]: [11, 20],
+  [UserRank.MOVIE_BUFF]: [21, Infinity],
+};
+
 const getUserRank = (filmsWatched) => {
-  if (filmsWatched > 0 && filmsWatched <= 10) {
+  if (filmsWatched > UserRankMap[UserRank.NOVICE][0] && filmsWatched <= UserRankMap[UserRank.NOVICE][1]) {
     return UserRank.NOVICE;
-  } else if (filmsWatched > 10 && filmsWatched <= 20) {
+  } else if (filmsWatched >= UserRankMap[UserRank.FAN][0] && filmsWatched <= UserRankMap[UserRank.FAN][1]) {
     return UserRank.FAN;
-  } else if (filmsWatched > 20) {
+  } else if (filmsWatched >= UserRankMap[UserRank.MOVIE_BUFF][0]) {
     return UserRank.MOVIE_BUFF;
   }
 };
